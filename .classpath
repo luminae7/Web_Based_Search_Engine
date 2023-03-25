@@ -6,7 +6,7 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/Users/LuMiNaE/Documents/Yr4-Spring/Comp4321/Project/combined.jar">
+	<classpathentry kind="lib" path="/Users/LuMiNaE/Documents/Yr4-Spring/Comp4321/Web_Based_Search_Engine/combined.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
