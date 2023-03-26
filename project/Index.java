@@ -27,40 +27,40 @@ public class Index
 		}
 	}
 	
-	public String getValue(String word) throws IOException
+	public String get(String word) throws IOException
 	{
 		// get the value given the key
 		return (String) hashtable.get(word);
 	}
 	
-	public String getKey(String value) throws IOException
-	{
-		// get the key given the value
-		FastIterator iter = hashtable.keys();
-		String key = null;
-		while ((key = (String) iter.next()) != null) {
-			String val = (String) hashtable.get(key);
-			if (val.compareTo(value)==0) {
-				return key;
-			}
-		}
-		return null;
-	}
+//	public String getKey(String value) throws IOException
+//	{
+//		// get the key given the value
+//		FastIterator iter = hashtable.keys();
+//		String key = null;
+//		while ((key = (String) iter.next()) != null) {
+//			String val = (String) hashtable.get(key);
+//			if (val.compareTo(value)==0) {
+//				return key;
+//			}
+//		}
+//		return null;
+//	}
 
-	public void addEntry(String key, String value) throws IOException
+	public void add(String key, String value) throws IOException
 	{
 		// Add an entry for the key "word" into hashtable
 		hashtable.put(key, value);
 	}
 	
-	public void delEntry(String key) throws IOException
+	public void del(String key) throws IOException
 	{
 		// Delete the word and its list from the hashtable
 		hashtable.remove(key);
 
 	}
 	
-	public void modify(String key, String word, String value) throws IOException
+	public void append(String key, String word, String value) throws IOException
 	{
 		// the format would be
 		// key: key

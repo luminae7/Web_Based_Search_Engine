@@ -115,6 +115,7 @@ public class Spider
 			
 			// create mapping table for PageID and URL
 			Index PageIDtoURL = new Index("PageIDtoURL", "1");
+			Index URLtoPageID = new Index("URLtoPageID", "1");
 			int PageIndex = PageIDtoURL.size();
 			
 			// create mapping table for PageID and LastModifiedTime
@@ -122,6 +123,7 @@ public class Spider
 			
 			// create mapping table for WordID and Word
 			Index WordIDtoWord = new Index("WordIDtoWord", "1");
+			Index WordtoWordID = new Index("WordtoWordID", "1");
 			int WordIndex = WordIDtoWord.size();
 			
 			// create forward index for Parent and Child
@@ -139,18 +141,19 @@ public class Spider
 					continue;
 				
 				
-				String PageID = PageIDtoURL.getKey(url);
+				String PageID = URLtoPageID.get(url);
 				// Case 1
 				// if URL not exists in table,
 				// store fetched page into mapping table of PageID and URL
 				if (PageID == null) {
-					PageIDtoURL.addEntry(Integer.toString(PageIndex), url);
-					PageIDtoTime.addEntry(Integer.toString(PageIndex), ""+extractDate());
+					PageIDtoURL.add(Integer.toString(PageIndex), url);
+					URLtoPageID.add(url, Integer.toString(PageIndex));
+					PageIDtoTime.add(Integer.toString(PageIndex), ""+extractDate());
 					PageID = Integer.toString(PageIndex);
 					PageIndex++;
 				} else {
 					DateFormat format = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
-					Date date = (Date) format.parse(PageIDtoTime.getValue(PageID));
+					Date date = (Date) format.parse(PageIDtoTime.get(PageID));
 					// Case 2
 					// if URL already exists in table, and the last modified date
 					// is earlier than or same as the one in record, then ignore
@@ -174,7 +177,7 @@ public class Spider
 					// Case 3
 					// if URL already exists in table, and the last modified date
 					// is later than the one in record, then extract and modify time
-					PageIDtoTime.addEntry(PageIDtoURL.getKey(url), ""+extractDate());
+					PageIDtoTime.add(URLtoPageID.get(url), ""+extractDate());
 				}
 				
 				
@@ -204,25 +207,26 @@ public class Spider
 					if (count < 10)
 						System.out.print(key + " " + freq + "; ");
 					
-					WordID = WordIDtoWord.getKey(key);
+					WordID = WordtoWordID.get(key);
 					// if new word then add to WordIDtoWord table
 					if (WordID == null) {
-						WordIDtoWord.addEntry(Integer.toString(WordIndex), key);
+						WordIDtoWord.add(Integer.toString(WordIndex), key);
+						WordtoWordID.add(key, Integer.toString(WordIndex));
 						WordID = Integer.toString(WordIndex);
 						WordIndex++;
 						
 						// add to WordIDtoPageID
-						WordIDtoPageID.addEntry(WordID, PageID+" "+freq+";");
+						WordIDtoPageID.add(WordID, PageID+" "+freq+";");
 					} else {
 						// add to WordIDtoPageID
-						WordIDtoPageID.modify(WordID, PageID, freq);
+						WordIDtoPageID.append(WordID, PageID, freq);
 					}
 					
 					// add to PageIDtoWordID
 					if (count == 0)
-						PageIDtoWordID.addEntry(PageID, WordID+" "+freq+";");
+						PageIDtoWordID.add(PageID, WordID+" "+freq+";");
 					else
-						PageIDtoWordID.modify(PageID, WordID, freq);
+						PageIDtoWordID.append(PageID, WordID, freq);
 					
 					count++;
 				}
@@ -244,18 +248,18 @@ public class Spider
 						System.out.println(ChildPageURL);
 					
 					// construct child string
-					ChildPageID = PageIDtoURL.getKey(ChildPageURL);
+					ChildPageID = URLtoPageID.get(ChildPageURL);
 					if (ChildPageID == null) {
 						Date date = new Date(0);
-						PageIDtoURL.addEntry(Integer.toString(PageIndex), ChildPageURL);
-						PageIDtoTime.addEntry(Integer.toString(PageIndex), ""+date);
+						PageIDtoURL.add(Integer.toString(PageIndex), ChildPageURL);
+						PageIDtoTime.add(Integer.toString(PageIndex), ""+date);
 						ChildPageID = Integer.toString(PageIndex);
 						PageIndex++;
 					}
 					Child += ChildPageID + ";";
 				}
 				// add child string to ParenttoChild
-				ParenttoChild.addEntry(PageID, Child);
+				ParenttoChild.add(PageID, Child);
 				
 				
 				// print the dividing line
@@ -277,8 +281,10 @@ public class Spider
 			
 			// save all the tables and indexes
 			PageIDtoURL.save();
+			URLtoPageID.save();
 			PageIDtoTime.save();
 			WordIDtoWord.save();
+			WordtoWordID.save();
 			ParenttoChild.save();
 			PageIDtoWordID.save();
 			WordIDtoPageID.save();
@@ -286,10 +292,14 @@ public class Spider
 			// print
 			// System.out.println("===== PageID to URL =====");
 			// PageIDtoURL.print();
+			// System.out.println("===== URL to PageID =====");
+			// URLtoPageID.print();
 			// System.out.println("===== PageID to Time =====");
 			// PageIDtoTime.print();
 			// System.out.println("===== WordID to Word =====");
 			// WordIDtoWord.print();
+			// System.out.println("===== Word to WordID =====");
+			// WordtoWordID.print();
 			// System.out.println("===== Parent to Child =====");
 			// ParenttoChild.print();
 			// System.out.println("===== PageID to WordID =====");
@@ -298,7 +308,7 @@ public class Spider
 			// WordIDtoPageID.print();
 			
 		} else {
-			System.out.println("Usage: java -cp htmlparser.jar [-links] url [-num] NumOfPages");
+			System.out.println("Usage: java -cp combined.jar:. project.main [-links] url [-num] NumOfPages");
 		}
 	}
 }
