@@ -252,6 +252,7 @@ public class Spider
 					if (ChildPageID == null) {
 						Date date = new Date(0);
 						PageIDtoURL.add(Integer.toString(PageIndex), ChildPageURL);
+						URLtoPageID.add(ChildPageURL, Integer.toString(PageIndex));
 						PageIDtoTime.add(Integer.toString(PageIndex), ""+date);
 						ChildPageID = Integer.toString(PageIndex);
 						PageIndex++;
