@@ -1,6 +1,6 @@
 Department of Computer Science and Engineering - HKUST
 http://www.cse.ust.hk
-Sat Mar 25 19:41:27 HKT 2023, 984
+Wed Mar 29 03:41:03 HKT 2023, 233 (Content-Length), 984 (Number of Words)
 & 21; - 5; 1 1; 2 1; 3 3; 7 1; 9 1; A 8; a 2; © 2; 
 https://hkust.edu.hk/news
 https://hkust.edu.hk/academics/list
@@ -15,7 +15,7 @@ https://seng.hkust.edu.hk/
 --------------------------------------------------
 News | The Hong Kong University of Science and Technology
 https://hkust.edu.hk/news
-Sat Mar 25 19:41:33 HKT 2023, 1088
+Wed Mar 29 03:41:08 HKT 2023, null (Content-Length), 1088 (Number of Words)
 | 1; & 6; A 4; a 8; X 1; Z 1; © 2; 50 1; AI 1; IN 1; 
 https://hkust.edu.hk/news#main-content
 https://hkust.edu.hk/news/announcements
@@ -30,7 +30,7 @@ https://hkust.edu.hk/visit
 --------------------------------------------------
 Academic Departments | The Hong Kong University of Science and Technology
 https://hkust.edu.hk/academics/list
-Sat Mar 25 19:41:39 HKT 2023, 2216
+Wed Mar 29 03:41:16 HKT 2023, null (Content-Length), 2216 (Number of Words)
 & 14; - 2; A 7; B 3; C 6; D 7; E 3; G 5; H 5; I 6; 
 https://hkust.edu.hk/academics/list#main-content
 https://hkust.edu.hk/news/announcements
@@ -45,7 +45,7 @@ https://hkust.edu.hk/visit
 --------------------------------------------------
 Best Study Abroad Programs|Vibrant Study Experience in Hong Kong||HKUST
 https://hkust.edu.hk/lifehkust
-Sat Mar 25 19:41:49 HKT 2023, 3497
+Wed Mar 29 03:41:22 HKT 2023, null (Content-Length), 3497 (Number of Words)
 & 13; - 3; A 8; I 1; X 1; Z 1; a 56; © 2; 50 2; 31 1; 
 https://hkust.edu.hk/lifehkust#main-content
 https://hkust.edu.hk/news/announcements
@@ -60,8 +60,8 @@ https://hkust.edu.hk/visit
 --------------------------------------------------
 HKUST Library
 https://library.hkust.edu.hk/
-Sat Mar 25 19:42:14 HKT 2023, 816
-& 18; - 1; @ 1; A 2; P 1; W 1; a 3; © 2; -- 1; 29 1; 
+Wed Mar 29 03:41:26 HKT 2023, null (Content-Length), 819 (Number of Words)
+& 18; - 1; @ 1; A 2; P 1; W 1; a 6; © 2; -- 1; 29 1; 
 https://hkust.edu.hk/news
 https://hkust.edu.hk/academics/list
 https://hkust.edu.hk/lifehkust
@@ -75,7 +75,7 @@ https://library.hkust.edu.hk/
 --------------------------------------------------
 Visit | The Hong Kong University of Science and Technology
 https://hkust.edu.hk/visit
-Sat Mar 25 19:42:31 HKT 2023, 1393
+Wed Mar 29 03:41:30 HKT 2023, null (Content-Length), 1393 (Number of Words)
 & 10; , 1; 5 1; A 4; O 1; a 11; | 1; © 2; 11 2; 12 2; 
 https://hkust.edu.hk/visit#main-content
 https://hkust.edu.hk/news/announcements
@@ -90,12 +90,12 @@ https://hkust.edu.hk/visit
 --------------------------------------------------
 No Title
 https://hkustcareers.hkust.edu.hk/
-Sat Mar 25 19:42:44 HKT 2023, 15
+Wed Mar 29 03:41:33 HKT 2023, null (Content-Length), 15 (Number of Words)
 PKIX 1; path 2; to 2; find 1; valid 1; org.htmlparser.util.ParserException: 1; requested 1; building 1; failed: 1; target 1; 
 --------------------------------------------------
 Faculty Profiles | The Hong Kong University of Science and Technology
 https://facultyprofiles.hkust.edu.hk/
-Sat Mar 25 19:42:45 HKT 2023, 108
+Wed Mar 29 03:41:34 HKT 2023, null (Content-Length), 108 (Number of Words)
 | 1; & 1; © 2; <> 1; of 6; on 1; is 1; to 1; A-Z 1; The 3; 
 https://www.ust.hk/news
 https://www.ust.hk/academics/list
@@ -110,7 +110,7 @@ https://facultyprofiles.hkust.edu.hk/#
 --------------------------------------------------
 QS Top 10 Universities in China by subject|HKUST
 https://hkust.edu.hk/about
-Sat Mar 25 19:42:50 HKT 2023, 3613
+Wed Mar 29 03:41:37 HKT 2023, null (Content-Length), 3613 (Number of Words)
 & 10; 1 5; 7 1; 9 1; A 6; C 1; F 1; K 1; S 1; T 1; 
 https://hkust.edu.hk/about#main-content
 https://hkust.edu.hk/news/announcements
@@ -125,7 +125,7 @@ https://hkust.edu.hk/visit
 --------------------------------------------------
 CSE Intranet | HKUST CSE
 https://cse.hkust.edu.hk/admin/intranet/
-Sat Mar 25 19:43:26 HKT 2023, 275
+Wed Mar 29 03:41:41 HKT 2023, null (Content-Length), 275 (Number of Words)
 | 1; & 10; © 2; Us 4; To 2; at 1; of 4; or 1; is 1; on 3; 
 https://hkust.edu.hk/news
 https://hkust.edu.hk/academics/list
@@ -140,7 +140,7 @@ https://seng.hkust.edu.hk/
 --------------------------------------------------
 HKUST ENGINEERING | HKUST School of Engineering
 https://seng.hkust.edu.hk/
-Sat Mar 25 19:43:29 HKT 2023, 2337
+Wed Mar 29 03:41:42 HKT 2023, null (Content-Length), 2337 (Number of Words)
 & 45; - 1; / 1; @ 1; A 15; I 2; Z 1; a 33; | 1; © 2; 
 https://seng.hkust.edu.hk/#main-content
 https://hkust.edu.hk/news
@@ -155,7 +155,7 @@ https://seng.hkust.edu.hk/prospective-students
 --------------------------------------------------
 Site Search | HKUST CSE
 https://cse.hkust.edu.hk/admin/search/
-Sat Mar 25 19:44:12 HKT 2023, 203
+Wed Mar 29 03:41:43 HKT 2023, null (Content-Length), 203 (Number of Words)
 | 1; & 9; © 2; Us 4; at 1; of 4; on 3; us 2; CSE 3; for 1; 
 https://hkust.edu.hk/news
 https://hkust.edu.hk/academics/list
@@ -170,8 +170,8 @@ https://seng.hkust.edu.hk/
 --------------------------------------------------
 Study at a World-class University in Hong Kong |HKUST
 https://hkust.edu.hk/
-Sat Mar 25 19:44:18 HKT 2023, 3872
-& 10; - 8; 3 3; 5 1; 6 2; 8 3; 9 1; @ 1; A 6; X 1; 
+Wed Mar 29 03:41:48 HKT 2023, null (Content-Length), 3840 (Number of Words)
+& 10; - 5; 3 1; 5 1; 6 2; 8 3; 9 1; @ 1; A 6; X 1; 
 https://hkust.edu.hk/#main-content
 https://hkust.edu.hk/news/announcements
 https://hkust.edu.hk/#
@@ -185,7 +185,7 @@ https://hkust.edu.hk/visit
 --------------------------------------------------
 Department of Computer Science and Engineering - HKUST
 https://cse.hkust.edu.hk/
-Sat Mar 25 19:45:12 HKT 2023, 984
+Wed Mar 29 03:41:53 HKT 2023, null (Content-Length), 984 (Number of Words)
 & 21; - 5; 1 1; 2 1; 3 3; 7 1; 9 1; A 8; a 2; © 2; 
 https://hkust.edu.hk/news
 https://hkust.edu.hk/academics/list
@@ -200,7 +200,7 @@ https://seng.hkust.edu.hk/
 --------------------------------------------------
 Department of Computer Science and Engineering - HKUST
 https://cse.hkust.edu.hk/#
-Sat Mar 25 19:45:13 HKT 2023, 984
+Wed Mar 29 03:41:53 HKT 2023, null (Content-Length), 984 (Number of Words)
 & 21; - 5; 1 1; 2 1; 3 3; 7 1; 9 1; A 8; a 2; © 2; 
 https://hkust.edu.hk/news
 https://hkust.edu.hk/academics/list
@@ -215,7 +215,7 @@ https://seng.hkust.edu.hk/
 --------------------------------------------------
 Undergraduate Programs | HKUST CSE
 https://cse.hkust.edu.hk/ug/
-Sat Mar 25 19:45:14 HKT 2023, 773
+Wed Mar 29 03:41:54 HKT 2023, null (Content-Length), 773 (Number of Words)
 & 9; - 2; . 1; / 1; 1 1; 3 1; 8 1; a 4; | 1; © 2; 
 https://hkust.edu.hk/news
 https://hkust.edu.hk/academics/list
@@ -230,7 +230,7 @@ https://seng.hkust.edu.hk/
 --------------------------------------------------
 Postgraduate Programs | HKUST CSE
 https://cse.hkust.edu.hk/pg/
-Sat Mar 25 19:45:26 HKT 2023, 364
+Wed Mar 29 03:41:54 HKT 2023, null (Content-Length), 364 (Number of Words)
 | 1; & 9; / 1; © 2; PG 4; MA 1; Us 4; To 1; at 3; de 1; 
 https://hkust.edu.hk/news
 https://hkust.edu.hk/academics/list
@@ -245,7 +245,7 @@ https://seng.hkust.edu.hk/
 --------------------------------------------------
 Faculty Intranet | HKUST CSE
 https://cse.hkust.edu.hk/Restricted/
-Sat Mar 25 19:45:32 HKT 2023, 299
+Wed Mar 29 03:41:55 HKT 2023, null (Content-Length), 299 (Number of Words)
 | 1; & 9; © 2; Us 4; To 1; at 1; be 1; of 5; is 1; on 3; 
 https://hkust.edu.hk/news
 https://hkust.edu.hk/academics/list
@@ -260,7 +260,7 @@ https://seng.hkust.edu.hk/
 --------------------------------------------------
 Alumni | HKUST CSE
 https://cse.hkust.edu.hk/admin/people/alumni/
-Sat Mar 25 19:45:37 HKT 2023, 276
+Wed Mar 29 03:41:55 HKT 2023, null (Content-Length), 276 (Number of Words)
 | 1; & 9; © 2; Us 4; at 2; by 1; of 7; in 2; is 1; on 4; 
 https://hkust.edu.hk/news
 https://hkust.edu.hk/academics/list
@@ -275,7 +275,7 @@ https://seng.hkust.edu.hk/
 --------------------------------------------------
 Job Openings | HKUST CSE
 https://cse.hkust.edu.hk/admin/recruitment/
-Sat Mar 25 19:45:39 HKT 2023, 229
+Wed Mar 29 03:41:55 HKT 2023, null (Content-Length), 229 (Number of Words)
 | 1; & 9; / 2; © 2; 15 1; Us 4; at 1; of 4; in 1; on 3; 
 https://hkust.edu.hk/news
 https://hkust.edu.hk/academics/list
@@ -290,7 +290,7 @@ https://seng.hkust.edu.hk/
 --------------------------------------------------
 Information for Employers & Industry Partners | HKUST CSE
 https://cse.hkust.edu.hk/admin/industry_collaboration/
-Sat Mar 25 19:45:41 HKT 2023, 234
+Wed Mar 29 03:41:56 HKT 2023, null (Content-Length), 234 (Number of Words)
 & 11; | 1; - 3; © 2; Us 4; at 1; of 4; on 3; us 2; for 6; 
 https://hkust.edu.hk/news
 https://hkust.edu.hk/academics/list
@@ -305,7 +305,7 @@ https://seng.hkust.edu.hk/
 --------------------------------------------------
 Welcome from Head of Department | HKUST CSE
 https://cse.hkust.edu.hk/admin/welcome/
-Sat Mar 25 19:45:43 HKT 2023, 657
+Wed Mar 29 03:41:56 HKT 2023, null (Content-Length), 657 (Number of Words)
 | 1; & 10; - 2; a 5; © 2; ), 1; 50 1; Us 4; We 5; To 1; 
 https://hkust.edu.hk/news
 https://hkust.edu.hk/academics/list
@@ -320,7 +320,7 @@ https://seng.hkust.edu.hk/
 --------------------------------------------------
 Mission and Vision | HKUST CSE
 https://cse.hkust.edu.hk/admin/mission/
-Sat Mar 25 19:45:53 HKT 2023, 641
+Wed Mar 29 03:41:56 HKT 2023, null (Content-Length), 641 (Number of Words)
 | 1; & 9; a 10; © 2; In 1; Us 4; To 8; at 2; by 4; an 1; 
 https://hkust.edu.hk/news
 https://hkust.edu.hk/academics/list
@@ -335,7 +335,7 @@ https://seng.hkust.edu.hk/
 --------------------------------------------------
 About CSE | HKUST CSE
 https://cse.hkust.edu.hk/admin/about/
-Sat Mar 25 19:46:02 HKT 2023, 539
+Wed Mar 29 03:41:57 HKT 2023, null (Content-Length), 539 (Number of Words)
 | 1; & 9; a 6; © 2; Us 4; at 3; as 6; be 1; of 18; is 5; 
 https://hkust.edu.hk/news
 https://hkust.edu.hk/academics/list
@@ -350,7 +350,7 @@ https://seng.hkust.edu.hk/
 --------------------------------------------------
 Fast Facts | HKUST CSE
 https://cse.hkust.edu.hk/admin/factsheet/
-Sat Mar 25 19:46:11 HKT 2023, 487
+Wed Mar 29 03:41:57 HKT 2023, null (Content-Length), 487 (Number of Words)
 | 1; & 10; - 2; a 2; © 2; 60 2; 53 1; 84 2; 46 1; Us 4; 
 https://hkust.edu.hk/news
 https://hkust.edu.hk/academics/list
@@ -365,7 +365,7 @@ https://seng.hkust.edu.hk/
 --------------------------------------------------
 News | HKUST CSE
 https://cse.hkust.edu.hk/News/
-Sat Mar 25 19:46:18 HKT 2023, 1278
+Wed Mar 29 03:41:57 HKT 2023, null (Content-Length), 1278 (Number of Words)
 & 44; - 4; 2 2; 3 4; 4 2; 6 2; 9 1; a 7; | 1; © 2; 
 https://hkust.edu.hk/news
 https://hkust.edu.hk/academics/list
@@ -380,7 +380,7 @@ https://seng.hkust.edu.hk/
 --------------------------------------------------
 Contact Us | HKUST CSE
 https://cse.hkust.edu.hk/admin/contact/
-Sat Mar 25 19:46:38 HKT 2023, 249
+Wed Mar 29 03:41:58 HKT 2023, null (Content-Length), 249 (Number of Words)
 | 1; & 9; © 2; Us 6; at 1; of 6; on 3; to 1; us 2; CSE 4; 
 https://hkust.edu.hk/news
 https://hkust.edu.hk/academics/list
@@ -395,7 +395,7 @@ https://seng.hkust.edu.hk/
 --------------------------------------------------
 Faculty | HKUST CSE
 https://cse.hkust.edu.hk/admin/people/faculty/
-Sat Mar 25 19:46:41 HKT 2023, 1633
+Wed Mar 29 03:41:58 HKT 2023, null (Content-Length), 1635 (Number of Words)
 | 1; & 13; © 2; Bo 3; B. 3; MA 2; LI 2; J. 3; Ke 3; NG 2; 
 https://hkust.edu.hk/news
 https://hkust.edu.hk/academics/list
@@ -410,7 +410,7 @@ https://seng.hkust.edu.hk/
 --------------------------------------------------
 Staff | HKUST CSE
 https://cse.hkust.edu.hk/admin/people/staff/
-Sat Mar 25 19:47:17 HKT 2023, 457
+Wed Mar 29 03:41:59 HKT 2023, null (Content-Length), 457 (Number of Words)
 | 1; & 11; © 2; CS 1; IT 7; Us 4; at 1; of 4; on 3; us 2; 
 https://hkust.edu.hk/news
 https://hkust.edu.hk/academics/list
@@ -425,7 +425,7 @@ https://seng.hkust.edu.hk/
 --------------------------------------------------
 Postgraduate Students | HKUST CSE
 https://cse.hkust.edu.hk/admin/people/pg/
-Sat Mar 25 19:47:29 HKT 2023, 444
+Wed Mar 29 03:41:59 HKT 2023, null (Content-Length), 444 (Number of Words)
 | 1; & 9; . 1; © 2; PG 2; Ka 3; Ho 1; No 1; Us 4; at 1; 
 https://hkust.edu.hk/news
 https://hkust.edu.hk/academics/list

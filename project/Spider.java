@@ -33,9 +33,52 @@ public class Spider
 {
 	private static String url;
 	
-	Spider(String _url)
+	private static Index PageIDtoURL;
+	private static Index URLtoPageID;
+	private static int PageIndex;
+	
+	private static Index PageIDtoTime;
+	
+	private static Index WordIDtoWord;
+	private static Index WordtoWordID;
+	private static int WordIndex;
+	
+	private static Index ParenttoChild;
+	
+	private static Index PageIDtoWordID;
+	private static Index WordIDtoPageID;
+	
+	private static Vector<String> pages_queue;
+	private static Vector<String> visited_pages;
+	
+	Spider(String _url) throws IOException
 	{
 		url = _url;
+		
+		// create mapping table for PageID and URL
+		PageIDtoURL = new Index("PageIDtoURL", "1");
+		URLtoPageID = new Index("URLtoPageID", "1");
+		PageIndex = PageIDtoURL.size();
+		
+		// create mapping table for PageID and LastModifiedTime
+		PageIDtoTime = new Index("PageIDtoTime", "1");
+		
+		// create mapping table for WordID and Word
+		WordIDtoWord = new Index("WordIDtoWord", "1");
+		WordtoWordID = new Index("WordtoWordID", "1");
+		WordIndex = WordIDtoWord.size();
+		
+		// create forward index for Parent and Child
+		ParenttoChild = new Index("ParenttoChild", "1");
+		
+		// create forward and backward index for PageID and WordID
+		PageIDtoWordID = new Index("PageIDtoWordID", "1");
+		WordIDtoPageID = new Index("WordIDtoPageID", "1");
+		
+		// initialize pages_queue and visitied_pages
+		// vector for storing next pages (breadth-first-search)
+		pages_queue = new Vector<String>();
+		visited_pages = new Vector<String>();
 	}
 	
 	public static Vector<String> extractWords() throws ParserException
@@ -85,6 +128,94 @@ public class Spider
 		return date;
 	}
 	
+	public static void storeWords(String PageID) throws ParserException, IOException
+	{
+		// get the text on the web page
+		Vector<String> words = extractWords();
+		
+		// print the size of the page
+		URL urll = new URL(url);
+		URLConnection connection = urll.openConnection();
+		String context_size = connection.getHeaderField("Content-Length");
+		// print both context-length and number of words extracted
+		System.out.print(", "+context_size+" (Content-Length)");
+		System.out.println(", "+words.size()+" (Number of Words)");
+		
+		// count the word frequency
+		Index wordfreq = new Index("wordfreq", "1");
+		HTree hashtable = wordfreq.countWords(words);
+		// print the text frequency
+		FastIterator iter = hashtable.keys();
+		String key;
+		String WordID;
+		String freq;
+		int count = 0;
+		while((key = (String)iter.next())!=null)
+		{
+			freq = (String) hashtable.get(key);
+			
+			
+			if (count < 10)
+				System.out.print(key + " " + freq + "; ");
+			
+			WordID = WordtoWordID.get(key);
+			// if new word then add to WordIDtoWord table
+			if (WordID == null) {
+				WordIDtoWord.add(Integer.toString(WordIndex), key);
+				WordtoWordID.add(key, Integer.toString(WordIndex));
+				WordID = Integer.toString(WordIndex);
+				WordIndex++;
+				
+				// add to WordIDtoPageID
+				WordIDtoPageID.add(WordID, PageID+" "+freq+";");
+			} else {
+				// add to WordIDtoPageID
+				WordIDtoPageID.append(WordID, PageID, freq);
+			}
+			
+			// add to PageIDtoWordID
+			if (count == 0)
+				PageIDtoWordID.add(PageID, WordID+" "+freq+";");
+			else
+				PageIDtoWordID.append(PageID, WordID, freq);
+			
+			count++;
+		}
+		System.out.println();
+	}
+	
+	public static void storeLinks(String PageID) throws ParserException, IOException
+	{
+		// get the child links
+		Vector<String> links = extractLinks();
+		String ChildPageURL;
+		String ChildPageID;
+		String Child = "";
+		// print the links
+		for(int j = 0; j < links.size(); j++) {
+			// add all links to vector for next pages
+			ChildPageURL = links.get(j);
+			pages_queue.add(ChildPageURL);
+			// print the first 10
+			if (j < 10)
+				System.out.println(ChildPageURL);
+			
+			// construct child string
+			ChildPageID = URLtoPageID.get(ChildPageURL);
+			if (ChildPageID == null) {
+				Date date = new Date(0);
+				PageIDtoURL.add(Integer.toString(PageIndex), ChildPageURL);
+				URLtoPageID.add(ChildPageURL, Integer.toString(PageIndex));
+				PageIDtoTime.add(Integer.toString(PageIndex), ""+date);
+				ChildPageID = Integer.toString(PageIndex);
+				PageIndex++;
+			}
+			Child += ChildPageID + ";";
+		}
+		// add child string to ParenttoChild
+		ParenttoChild.add(PageID, Child);
+	}
+	
 	public static void printHeader() throws IOException
 	{
 		// print the title
@@ -105,33 +236,44 @@ public class Spider
 		System.out.print(date);
 	}
 	
-	public static void crawl(int num) throws Exception
+	public static void saveDatabase() throws IOException
+	{
+		// print
+		// System.out.println("===== PageID to URL =====");
+		// PageIDtoURL.print();
+		// System.out.println("===== URL to PageID =====");
+		// URLtoPageID.print();
+		// System.out.println("===== PageID to Time =====");
+		// PageIDtoTime.print();
+		// System.out.println("===== WordID to Word =====");
+		// WordIDtoWord.print();
+		// System.out.println("===== Word to WordID =====");
+		// WordtoWordID.print();
+		// System.out.println("===== Parent to Child =====");
+		// ParenttoChild.print();
+		// System.out.println("===== PageID to WordID =====");
+		// PageIDtoWordID.print();
+		// System.out.println("===== WordID to PageID =====");
+		// WordIDtoPageID.print();
+				 
+		// save all the tables and indexes
+		PageIDtoURL.save();
+		URLtoPageID.save();
+		PageIDtoTime.save();
+		WordIDtoWord.save();
+		WordtoWordID.save();
+		ParenttoChild.save();
+		PageIDtoWordID.save();
+		WordIDtoPageID.save();
+	}
+	
+	public void crawl(int num) throws Exception
 	{
 		if (url != null) {
 			
-			// vector for storing next pages (breadth-first-search)
-			Vector<String> pages = new Vector<String>();
-			Vector<String> visited_pages = new Vector<String>();
-			
-			// create mapping table for PageID and URL
-			Index PageIDtoURL = new Index("PageIDtoURL", "1");
-			Index URLtoPageID = new Index("URLtoPageID", "1");
-			int PageIndex = PageIDtoURL.size();
-			
-			// create mapping table for PageID and LastModifiedTime
-			Index PageIDtoTime = new Index("PageIDtoTime", "1");
-			
-			// create mapping table for WordID and Word
-			Index WordIDtoWord = new Index("WordIDtoWord", "1");
-			Index WordtoWordID = new Index("WordtoWordID", "1");
-			int WordIndex = WordIDtoWord.size();
-			
-			// create forward index for Parent and Child
-			Index ParenttoChild = new Index("ParenttoChild", "1");
-			
-			// create forward and backward index for PageID and WordID
-			Index PageIDtoWordID = new Index("PageIDtoWordID", "1");
-			Index WordIDtoPageID = new Index("WordIDtoPageID", "1");
+			// initialize pages_queue and visitied_pages
+			pages_queue = new Vector<String>();
+			visited_pages = new Vector<String>();
 			
 			// crawl num number of pages and store into tables and indexes
 			for (int i = 0; i < num; i++) {
@@ -144,7 +286,7 @@ public class Spider
 				String PageID = URLtoPageID.get(url);
 				// Case 1
 				// if URL not exists in table,
-				// store fetched page into mapping table of PageID and URL
+				// store fetching page into mapping table of PageID and URL
 				if (PageID == null) {
 					PageIDtoURL.add(Integer.toString(PageIndex), url);
 					URLtoPageID.add(url, Integer.toString(PageIndex));
@@ -162,13 +304,13 @@ public class Spider
 						Vector<String> links = extractLinks();
 						// append the links to pages
 						for(int j = 0; j < links.size(); j++)
-							pages.add(links.get(j));
+							pages_queue.add(links.get(j));
 						// i-- as this page is not fetched
 						i--;
 						// assign next page to url
-						if (!pages.isEmpty())
+						if (!pages_queue.isEmpty())
 							// if visited this round, then next page
-							while (visited_pages.contains(url = pages.remove(0)))
+							while (visited_pages.contains(url = pages_queue.remove(0)))
 								continue;
 						else
 							url = null;
@@ -176,137 +318,37 @@ public class Spider
 					}	
 					// Case 3
 					// if URL already exists in table, and the last modified date
-					// is later than the one in record, then extract and modify time
+					// is later than the one in record, then fetch and modify time
 					PageIDtoTime.add(URLtoPageID.get(url), ""+extractDate());
 				}
-				
 				
 				// print the headers
 				// (page title, URL, Last modification date)
 				printHeader();
 				
+				// store the words from the page
+				storeWords(PageID);
 				
-				// get the text on the web page
-				Vector<String> words = extractWords();
-				// print the size of the page
-				System.out.println(", "+words.size());
-				// count the word frequency
-				Index wordfreq = new Index("wordfreq", "1");
-				HTree hashtable = wordfreq.countWords(words);
-				// print the text frequency
-				FastIterator iter = hashtable.keys();
-				String key;
-				String WordID;
-				String freq;
-				int count = 0;
-				while((key = (String)iter.next())!=null)
-				{
-					freq = (String) hashtable.get(key);
-					
-					
-					if (count < 10)
-						System.out.print(key + " " + freq + "; ");
-					
-					WordID = WordtoWordID.get(key);
-					// if new word then add to WordIDtoWord table
-					if (WordID == null) {
-						WordIDtoWord.add(Integer.toString(WordIndex), key);
-						WordtoWordID.add(key, Integer.toString(WordIndex));
-						WordID = Integer.toString(WordIndex);
-						WordIndex++;
-						
-						// add to WordIDtoPageID
-						WordIDtoPageID.add(WordID, PageID+" "+freq+";");
-					} else {
-						// add to WordIDtoPageID
-						WordIDtoPageID.append(WordID, PageID, freq);
-					}
-					
-					// add to PageIDtoWordID
-					if (count == 0)
-						PageIDtoWordID.add(PageID, WordID+" "+freq+";");
-					else
-						PageIDtoWordID.append(PageID, WordID, freq);
-					
-					count++;
-				}
-				System.out.println();
-				
-				
-				// get the child links
-				Vector<String> links = extractLinks();
-				String ChildPageURL;
-				String ChildPageID;
-				String Child = "";
-				// print the links
-				for(int j = 0; j < links.size(); j++) {
-					// add all links to vector for next pages
-					ChildPageURL = links.get(j);
-					pages.add(ChildPageURL);
-					// print the first 10
-					if (j < 10)
-						System.out.println(ChildPageURL);
-					
-					// construct child string
-					ChildPageID = URLtoPageID.get(ChildPageURL);
-					if (ChildPageID == null) {
-						Date date = new Date(0);
-						PageIDtoURL.add(Integer.toString(PageIndex), ChildPageURL);
-						URLtoPageID.add(ChildPageURL, Integer.toString(PageIndex));
-						PageIDtoTime.add(Integer.toString(PageIndex), ""+date);
-						ChildPageID = Integer.toString(PageIndex);
-						PageIndex++;
-					}
-					Child += ChildPageID + ";";
-				}
-				// add child string to ParenttoChild
-				ParenttoChild.add(PageID, Child);
-				
+				// store the links from the page
+				storeLinks(PageID);
 				
 				// print the dividing line
 				System.out.println("--------------------------------------------------");
 				
-				
 				// add to visited pages
 				visited_pages.add(url);
 				
-				
 				// assign next page to url
-				if (!pages.isEmpty()) {
+				if (!pages_queue.isEmpty()) {
 					// if visited this round, then next page
-					while (visited_pages.contains(url = pages.remove(0)))
+					while (visited_pages.contains(url = pages_queue.remove(0)))
 						continue;
 				}
 				else url = null;
 			}
 			
-			// save all the tables and indexes
-			PageIDtoURL.save();
-			URLtoPageID.save();
-			PageIDtoTime.save();
-			WordIDtoWord.save();
-			WordtoWordID.save();
-			ParenttoChild.save();
-			PageIDtoWordID.save();
-			WordIDtoPageID.save();
-			
-			// print
-			// System.out.println("===== PageID to URL =====");
-			// PageIDtoURL.print();
-			// System.out.println("===== URL to PageID =====");
-			// URLtoPageID.print();
-			// System.out.println("===== PageID to Time =====");
-			// PageIDtoTime.print();
-			// System.out.println("===== WordID to Word =====");
-			// WordIDtoWord.print();
-			// System.out.println("===== Word to WordID =====");
-			// WordtoWordID.print();
-			// System.out.println("===== Parent to Child =====");
-			// ParenttoChild.print();
-			// System.out.println("===== PageID to WordID =====");
-			// PageIDtoWordID.print();
-			// System.out.println("===== WordID to PageID =====");
-			// WordIDtoPageID.print();
+			// save the databases
+			saveDatabase();
 			
 		} else {
 			System.out.println("Usage: java -cp combined.jar:. project.main [-links] url [-num] NumOfPages");

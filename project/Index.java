@@ -32,20 +32,6 @@ public class Index
 		// get the value given the key
 		return (String) hashtable.get(word);
 	}
-	
-//	public String getKey(String value) throws IOException
-//	{
-//		// get the key given the value
-//		FastIterator iter = hashtable.keys();
-//		String key = null;
-//		while ((key = (String) iter.next()) != null) {
-//			String val = (String) hashtable.get(key);
-//			if (val.compareTo(value)==0) {
-//				return key;
-//			}
-//		}
-//		return null;
-//	}
 
 	public void add(String key, String value) throws IOException
 	{
@@ -55,7 +41,7 @@ public class Index
 	
 	public void del(String key) throws IOException
 	{
-		// Delete the word and its list from the hashtable
+		// delete the word and its list from the hashtable
 		hashtable.remove(key);
 
 	}
@@ -63,10 +49,9 @@ public class Index
 	public void append(String key, String word, String value) throws IOException
 	{
 		// the format would be
-		// key: key
-		// value: word value; word value; ...
+		// (key : word value; word value; word value;...)
 		// need to find the one with the same word
-		// delete it and append the new one at the back
+		// delete it and append the new value at the back
 		String[] texts = ((String) hashtable.get(key)).split(";");
 		String result = "";
 		
@@ -85,6 +70,7 @@ public class Index
 	
 	public int size() throws IOException
 	{
+		// return the size of the hashtable
 		int count = 0;
 		FastIterator iter = hashtable.keys();
 		while (iter.next() != null)
@@ -108,10 +94,12 @@ public class Index
 	{
 		// save with commit
 		recman.commit();
+		recman.close();
 	}
 
 	public HTree countWords(Vector<String> words) throws IOException
 	{
+		// Create hashtable for those words with frequency
 		// Add an "freq" entry for the key "word" into hashtable
 		String prev = null;
 		for (String word : words) {
