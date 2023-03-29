@@ -13,6 +13,8 @@ You can also specify the output destination by:
 
 The arguments links and num are optional. The initial value of the arguments are http://cse.ust.hk and 30.
 
+With -num 0, you can print the current data (fetched pages) stored in database.
+
 If you want to first clear the database saved previously:
 > rm \*.db \*.lg
 
