@@ -24,6 +24,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import org.jsoup.Jsoup;
 import java.text.DateFormat;
@@ -44,6 +46,7 @@ public class Spider
 	private static int WordIndex;
 	
 	private static Index ParenttoChild;
+	private static Index ChildtoParent;
 	
 	private static Index PageIDtoWordID;
 	private static Index WordIDtoPageID;
@@ -68,8 +71,9 @@ public class Spider
 		WordtoWordID = new Index("WordtoWordID", "1");
 		WordIndex = WordIDtoWord.size();
 		
-		// create forward index for Parent and Child
+		// create forward and backward index for Parent and Child
 		ParenttoChild = new Index("ParenttoChild", "1");
+		ChildtoParent = new Index("ChildtoParent", "1");
 		
 		// create forward and backward index for PageID and WordID
 		PageIDtoWordID = new Index("PageIDtoWordID", "1");
@@ -128,7 +132,30 @@ public class Spider
 		return date;
 	}
 	
-	public static void storeWords(String PageID) throws ParserException, IOException
+	public static String extractHTMLLength() throws Exception
+	{
+		try {
+			// get the raw HTML from url
+	        StringBuilder result = new StringBuilder();
+	        URL urll = new URL(url);
+	        HttpURLConnection connection = (HttpURLConnection) urll.openConnection();
+	        connection.setRequestMethod("GET");
+	        try (BufferedReader reader = new BufferedReader(
+	        		new InputStreamReader(connection.getInputStream()))) {
+	    		for (String line; (line = reader.readLine()) != null; ) {
+	    			result.append(line);
+	        	}
+	        }
+	        return Integer.toString(result.toString().length());
+		}
+		catch(Exception e) {
+			// if cannot get the HTML, certification error
+			// return null
+			return null;
+		}
+	}
+	
+	public static void storeWords(String PageID) throws Exception
 	{
 		// get the text on the web page
 		Vector<String> words = extractWords();
@@ -137,9 +164,10 @@ public class Spider
 		URL urll = new URL(url);
 		URLConnection connection = urll.openConnection();
 		String context_size = connection.getHeaderField("Content-Length");
-		// print both context-length and number of words extracted
+		// print all context-length, HTML Length and number of words extracted
 		System.out.print(", "+context_size+" (Content-Length)");
-		System.out.println(", "+words.size()+" (Number of Words)");
+		System.out.println(", "+extractHTMLLength()+" (HTML Length)");
+		System.out.println(words.size()+" (Number of Words)");
 		
 		// count the word frequency
 		Index wordfreq = new Index("wordfreq", "1");
@@ -170,14 +198,14 @@ public class Spider
 				WordIDtoPageID.add(WordID, PageID+" "+freq+";");
 			} else {
 				// add to WordIDtoPageID
-				WordIDtoPageID.append(WordID, PageID, freq);
+				WordIDtoPageID.appendFreq(WordID, PageID, freq);
 			}
 			
 			// add to PageIDtoWordID
 			if (count == 0)
 				PageIDtoWordID.add(PageID, WordID+" "+freq+";");
 			else
-				PageIDtoWordID.append(PageID, WordID, freq);
+				PageIDtoWordID.appendFreq(PageID, WordID, freq);
 			
 			count++;
 		}
@@ -190,17 +218,18 @@ public class Spider
 		Vector<String> links = extractLinks();
 		String ChildPageURL;
 		String ChildPageID;
-		String Child = "";
 		// print the links
 		for(int j = 0; j < links.size(); j++) {
 			// add all links to vector for next pages
 			ChildPageURL = links.get(j);
-			pages_queue.add(ChildPageURL);
+			if (!pages_queue.contains(ChildPageURL))
+				pages_queue.add(ChildPageURL);
+			
 			// print the first 10
 			if (j < 10)
 				System.out.println(ChildPageURL);
 			
-			// construct child string
+			// put child page to PageIDtoURL tables
 			ChildPageID = URLtoPageID.get(ChildPageURL);
 			if (ChildPageID == null) {
 				Date date = new Date(0);
@@ -210,10 +239,21 @@ public class Spider
 				ChildPageID = Integer.toString(PageIndex);
 				PageIndex++;
 			}
-			Child += ChildPageID + ";";
+			
+			// add child string to ParenttoChild
+			if (ParenttoChild.get(PageID) == null) {
+				ParenttoChild.add(PageID, ChildPageID+";");
+			} else {
+				ParenttoChild.append(PageID, ChildPageID);
+			}
+			
+			// add parent string to ChildtoParent
+			if (ChildtoParent.get(ChildPageID) == null) {
+				ChildtoParent.add(ChildPageID, PageID+";");
+			} else {
+				ChildtoParent.append(ChildPageID, PageID);
+			}
 		}
-		// add child string to ParenttoChild
-		ParenttoChild.add(PageID, Child);
 	}
 	
 	public static void printHeader() throws IOException
@@ -223,6 +263,7 @@ public class Spider
 		try {
 			title = Jsoup.connect(url).get().title();
 		}
+		// if cannot get the title, certification error
 		catch (Exception e) {
 			title = "No Title";
 		}
@@ -251,6 +292,8 @@ public class Spider
 		// WordtoWordID.print();
 		// System.out.println("===== Parent to Child =====");
 		// ParenttoChild.print();
+		// System.out.println("===== Child to Parent =====");
+		// ChildtoParent.print();
 		// System.out.println("===== PageID to WordID =====");
 		// PageIDtoWordID.print();
 		// System.out.println("===== WordID to PageID =====");
@@ -263,6 +306,7 @@ public class Spider
 		WordIDtoWord.save();
 		WordtoWordID.save();
 		ParenttoChild.save();
+		ChildtoParent.save();
 		PageIDtoWordID.save();
 		WordIDtoPageID.save();
 	}

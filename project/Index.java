@@ -46,7 +46,24 @@ public class Index
 
 	}
 	
-	public void append(String key, String word, String value) throws IOException
+	public void append(String key, String value) throws IOException
+	{
+		// the format would be
+		// (key : value;value;value;...)
+		// need to find whether it contains the same value already
+		// if yes, ignore it
+		// if no, append it at the end
+		String[] texts = ((String) hashtable.get(key)).split(";");
+		
+		for (String text : texts) {
+			// if same word then ignore
+			if (text.compareTo(value)==0)
+				return;
+		}
+		hashtable.put(key, hashtable.get(key)+value+";");
+	}
+	
+	public void appendFreq(String key, String word, String value) throws IOException
 	{
 		// the format would be
 		// (key : word value; word value; word value;...)
