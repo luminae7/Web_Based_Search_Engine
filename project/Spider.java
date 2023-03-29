@@ -305,16 +305,34 @@ public class Spider
 			// print the dividing line
 			System.out.println("--------------------------------------------------");
 		}
+		
+		// print everything in db for checking
+		// System.out.println("===== 1. PageID to URL =====");
+		// PageIDtoURL.print();
+		// System.out.println("===== 2. URL to PageID =====");
+		// URLtoPageID.print();
+		// System.out.println("===== 3. PageID to Title =====");
+		// PageIDtoTitle.print();
+		// System.out.println("===== 4. PageID to Time =====");
+		// PageIDtoTime.print();
+		// System.out.println("===== 5. PageID to Length =====");
+		// PageIDtoLength.print();
+		// System.out.println("===== 6. WordID to Word =====");
+		// WordIDtoWord.print();
+		// System.out.println("===== 7. Word to WordID =====");
+		// WordtoWordID.print();
+		// System.out.println("===== 8. Parent to Child =====");
+		// ParenttoChild.print();
+		// System.out.println("===== 9. Child to Parent =====");
+		// ChildtoParent.print();
+		// System.out.println("===== 10. PageID to WordID =====");
+		// PageIDtoWordID.print();
+		// System.out.println("===== 11. WordID to PageID =====");
+		// WordIDtoPageID.print();
 	}
 	
 	public static void saveDatabase() throws IOException
-	{
-		// print
-		print();
-		
-		// print everything in db for checking
-		System.out.println("===== PageID to URL =====")
-				 
+	{		 
 		// save all the tables and indexes
 		PageIDtoURL.save();
 		URLtoPageID.save();
@@ -407,6 +425,9 @@ public class Spider
 				}
 				else url = null;
 			}
+			
+			// print
+			print();
 			
 			// save the databases
 			saveDatabase();
