@@ -1,5 +1,5 @@
 # COMP4321 Project
----
+
 Given a starting URL and number of pages to be indexed, the Spider will crawl the site into the local database using a breadth-first search.
 
 First build the program by:
