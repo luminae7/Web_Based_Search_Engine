@@ -32,6 +32,12 @@ public class Index
 		// get the value given the key
 		return (String) hashtable.get(word);
 	}
+	
+	public FastIterator getKeys() throws IOException
+	{
+		// return all the keys in the hashtable
+		return hashtable.keys();
+	}
 
 	public void add(String key, String value) throws IOException
 	{

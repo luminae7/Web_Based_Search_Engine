@@ -39,7 +39,9 @@ public class Spider
 	private static Index URLtoPageID;
 	private static int PageIndex;
 	
+	private static Index PageIDtoTitle;
 	private static Index PageIDtoTime;
+	private static Index PageIDtoLength;
 	
 	private static Index WordIDtoWord;
 	private static Index WordtoWordID;
@@ -63,8 +65,10 @@ public class Spider
 		URLtoPageID = new Index("URLtoPageID", "1");
 		PageIndex = PageIDtoURL.size();
 		
-		// create mapping table for PageID and LastModifiedTime
+		// create mapping table for PageID and Header
+		PageIDtoTitle = new Index("PageIDtoTitle", "1");
 		PageIDtoTime = new Index("PageIDtoTime", "1");
+		PageIDtoLength = new Index("PageIDtoLength", "1");
 		
 		// create mapping table for WordID and Word
 		WordIDtoWord = new Index("WordIDtoWord", "1");
@@ -83,37 +87,6 @@ public class Spider
 		// vector for storing next pages (breadth-first-search)
 		pages_queue = new Vector<String>();
 		visited_pages = new Vector<String>();
-	}
-	
-	public static Vector<String> extractWords() throws ParserException
-	{
-		// extract words in url and return them
-		Vector<String> words = new Vector<String>();
-		StringBean sb =  new StringBean();
-		sb.setLinks(true);
-		sb.setURL(url);
-		
-		// split with space characters
-		String[] strings = sb.getStrings().split("\\s+");
-		
-		// add the strings into vector of strings
-		for (String string : strings) {
-			words.add(string);
-		}
-		return words;
-	}
-	
-	public static Vector<String> extractLinks() throws ParserException
-	{
-		// extract links in url and return them
-		Vector<String> links = new Vector<String>();
-		LinkBean lb = new LinkBean();
-		lb.setURL(url);
-		URL[] url = lb.getLinks();
-		for (int i = 0; i < url.length; i++) {
-			links.add(url[i].toString());
-		}
-		return links;
 	}
 	
 	public static Date extractDate() throws IOException
@@ -155,6 +128,52 @@ public class Spider
 		}
 	}
 	
+	public static Vector<String> extractWords() throws ParserException
+	{
+		// extract words in url and return them
+		Vector<String> words = new Vector<String>();
+		StringBean sb =  new StringBean();
+		sb.setLinks(true);
+		sb.setURL(url);
+		
+		// split with space characters
+		String[] strings = sb.getStrings().split("\\s+");
+		
+		// add the strings into vector of strings
+		for (String string : strings) {
+			words.add(string);
+		}
+		return words;
+	}
+	
+	public static Vector<String> extractLinks() throws ParserException
+	{
+		// extract links in url and return them
+		Vector<String> links = new Vector<String>();
+		LinkBean lb = new LinkBean();
+		lb.setURL(url);
+		URL[] url = lb.getLinks();
+		for (int i = 0; i < url.length; i++) {
+			links.add(url[i].toString());
+		}
+		return links;
+	}
+	
+	public static void storeTitle(String PageID) throws IOException
+	{
+		// print the title
+		String title;
+		try {
+			title = Jsoup.connect(url).get().title();
+		}
+		// if cannot get the title, certification error
+		catch (Exception e) {
+			title = "No Title";
+		}
+		// store the title to PageIDtoTitle
+		PageIDtoTitle.add(PageID, title);
+	}
+	
 	public static void storeWords(String PageID) throws Exception
 	{
 		// get the text on the web page
@@ -164,10 +183,8 @@ public class Spider
 		URL urll = new URL(url);
 		URLConnection connection = urll.openConnection();
 		String context_size = connection.getHeaderField("Content-Length");
-		// print all context-length, HTML Length and number of words extracted
-		System.out.print(", "+context_size+" (Content-Length)");
-		System.out.println(", "+extractHTMLLength()+" (HTML Length)");
-		System.out.println(words.size()+" (Number of Words)");
+		// save all context-length, HTML Length and number of words extracted
+		PageIDtoLength.add(PageID, context_size+";"+extractHTMLLength()+";"+words.size());
 		
 		// count the word frequency
 		Index wordfreq = new Index("wordfreq", "1");
@@ -181,10 +198,6 @@ public class Spider
 		while((key = (String)iter.next())!=null)
 		{
 			freq = (String) hashtable.get(key);
-			
-			
-			if (count < 10)
-				System.out.print(key + " " + freq + "; ");
 			
 			WordID = WordtoWordID.get(key);
 			// if new word then add to WordIDtoWord table
@@ -209,7 +222,6 @@ public class Spider
 			
 			count++;
 		}
-		System.out.println();
 	}
 	
 	public static void storeLinks(String PageID) throws ParserException, IOException
@@ -224,10 +236,6 @@ public class Spider
 			ChildPageURL = links.get(j);
 			if (!pages_queue.contains(ChildPageURL))
 				pages_queue.add(ChildPageURL);
-			
-			// print the first 10
-			if (j < 10)
-				System.out.println(ChildPageURL);
 			
 			// put child page to PageIDtoURL tables
 			ChildPageID = URLtoPageID.get(ChildPageURL);
@@ -256,53 +264,63 @@ public class Spider
 		}
 	}
 	
-	public static void printHeader() throws IOException
+	public static void print() throws IOException
 	{
-		// print the title
-		String title;
-		try {
-			title = Jsoup.connect(url).get().title();
+		FastIterator iter = PageIDtoTitle.getKeys();
+		String PageID;
+		while ((PageID = (String)iter.next()) != null) {
+			// print Title
+			System.out.println(PageIDtoTitle.get(PageID));
+			
+			// print URL
+			System.out.println(PageIDtoURL.get(PageID));
+			
+			// print Last Modified Date
+			System.out.print(PageIDtoTime.get(PageID));
+			// print Size of Page
+			String[] Length = PageIDtoLength.get(PageID).split(";");
+			System.out.println(", "+Length[0]+" (Content-Length), "+Length[1]+" (HTML Length)");
+			// print number of words
+			System.out.println(Length[2]+" (Number of Words)");
+			
+			// print word with freq (up to 10)
+			if (PageIDtoWordID.get(PageID) != null) {
+				String[] wordIDs = PageIDtoWordID.get(PageID).split(";");
+				for (int i = 0; i < 10; i++) {
+					String[] wordID_freq = wordIDs[i].split(" ");
+					String word = WordIDtoWord.get(wordID_freq[0]);
+					System.out.print(word+" "+wordID_freq[1]+"; ");
+				}
+				System.out.println("");
+			}
+				
+			// print child links (up to 10)
+			if (ParenttoChild.get(PageID) != null) {
+				String[] linkIDs = ParenttoChild.get(PageID).split(";");
+				for (int i = 0; i < 10; i++) {
+					System.out.println(PageIDtoURL.get(linkIDs[i]));
+				}
+			}
+			
+			// print the dividing line
+			System.out.println("--------------------------------------------------");
 		}
-		// if cannot get the title, certification error
-		catch (Exception e) {
-			title = "No Title";
-		}
-		System.out.println(title);
-		
-		// print the url
-		System.out.println(url);
-		
-		// print the last modified date
-		Date date = extractDate();
-		System.out.print(date);
 	}
 	
 	public static void saveDatabase() throws IOException
 	{
 		// print
-		// System.out.println("===== PageID to URL =====");
-		// PageIDtoURL.print();
-		// System.out.println("===== URL to PageID =====");
-		// URLtoPageID.print();
-		// System.out.println("===== PageID to Time =====");
-		// PageIDtoTime.print();
-		// System.out.println("===== WordID to Word =====");
-		// WordIDtoWord.print();
-		// System.out.println("===== Word to WordID =====");
-		// WordtoWordID.print();
-		// System.out.println("===== Parent to Child =====");
-		// ParenttoChild.print();
-		// System.out.println("===== Child to Parent =====");
-		// ChildtoParent.print();
-		// System.out.println("===== PageID to WordID =====");
-		// PageIDtoWordID.print();
-		// System.out.println("===== WordID to PageID =====");
-		// WordIDtoPageID.print();
+		print();
+		
+		// print everything in db for checking
+		System.out.println("===== PageID to URL =====")
 				 
 		// save all the tables and indexes
 		PageIDtoURL.save();
 		URLtoPageID.save();
+		PageIDtoTitle.save();
 		PageIDtoTime.save();
+		PageIDtoLength.save();
 		WordIDtoWord.save();
 		WordtoWordID.save();
 		ParenttoChild.save();
@@ -321,6 +339,9 @@ public class Spider
 			
 			// crawl num number of pages and store into tables and indexes
 			for (int i = 0; i < num; i++) {
+				
+				// for tracking process
+				// System.out.println(i+"...");
 				
 				// if breadth first search has done
 				if (url == null)
@@ -366,18 +387,14 @@ public class Spider
 					PageIDtoTime.add(URLtoPageID.get(url), ""+extractDate());
 				}
 				
-				// print the headers
-				// (page title, URL, Last modification date)
-				printHeader();
+				// store the title
+				storeTitle(PageID);
 				
 				// store the words from the page
 				storeWords(PageID);
 				
 				// store the links from the page
 				storeLinks(PageID);
-				
-				// print the dividing line
-				System.out.println("--------------------------------------------------");
 				
 				// add to visited pages
 				visited_pages.add(url);
