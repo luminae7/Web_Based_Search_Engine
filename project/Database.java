@@ -8,12 +8,12 @@ import java.util.Vector;
 import java.io.IOException;
 import java.io.Serializable;
 
-public class Index
+public class Database
 {
 	private RecordManager recman;
 	private HTree hashtable;
 
-	Index(String recordmanager, String objectname) throws IOException
+	Database(String recordmanager, String objectname) throws IOException
 	{
 		recordmanager = "database/" + recordmanager;
 		recman = RecordManagerFactory.createRecordManager(recordmanager);

@@ -35,23 +35,23 @@ public class Spider
 {
 	private static String url;
 	
-	private static Index PageIDtoURL;
-	private static Index URLtoPageID;
+	private static Database PageIDtoURL;
+	private static Database URLtoPageID;
 	private static int PageIndex;
 	
-	private static Index PageIDtoTitle;
-	private static Index PageIDtoTime;
-	private static Index PageIDtoLength;
+	private static Database PageIDtoTitle;
+	private static Database PageIDtoTime;
+	private static Database PageIDtoLength;
 	
-	private static Index WordIDtoWord;
-	private static Index WordtoWordID;
+	private static Database WordIDtoWord;
+	private static Database WordtoWordID;
 	private static int WordIndex;
 	
-	private static Index ParenttoChild;
-	private static Index ChildtoParent;
+	private static Database ParenttoChild;
+	private static Database ChildtoParent;
 	
-	private static Index PageIDtoWordID;
-	private static Index WordIDtoPageID;
+	private static Database PageIDtoWordID;
+	private static Database WordIDtoPageID;
 	
 	private static Vector<String> pages_queue;
 	private static Vector<String> visited_pages;
@@ -61,27 +61,27 @@ public class Spider
 		url = _url;
 		
 		// create mapping table for PageID and URL
-		PageIDtoURL = new Index("PageIDtoURL", "1");
-		URLtoPageID = new Index("URLtoPageID", "1");
+		PageIDtoURL = new Database("PageIDtoURL", "1");
+		URLtoPageID = new Database("URLtoPageID", "1");
 		PageIndex = PageIDtoURL.size();
 		
 		// create mapping table for PageID and Header
-		PageIDtoTitle = new Index("PageIDtoTitle", "1");
-		PageIDtoTime = new Index("PageIDtoTime", "1");
-		PageIDtoLength = new Index("PageIDtoLength", "1");
+		PageIDtoTitle = new Database("PageIDtoTitle", "1");
+		PageIDtoTime = new Database("PageIDtoTime", "1");
+		PageIDtoLength = new Database("PageIDtoLength", "1");
 		
 		// create mapping table for WordID and Word
-		WordIDtoWord = new Index("WordIDtoWord", "1");
-		WordtoWordID = new Index("WordtoWordID", "1");
+		WordIDtoWord = new Database("WordIDtoWord", "1");
+		WordtoWordID = new Database("WordtoWordID", "1");
 		WordIndex = WordIDtoWord.size();
 		
 		// create forward and backward index for Parent and Child
-		ParenttoChild = new Index("ParenttoChild", "1");
-		ChildtoParent = new Index("ChildtoParent", "1");
+		ParenttoChild = new Database("ParenttoChild", "1");
+		ChildtoParent = new Database("ChildtoParent", "1");
 		
 		// create forward and backward index for PageID and WordID
-		PageIDtoWordID = new Index("PageIDtoWordID", "1");
-		WordIDtoPageID = new Index("WordIDtoPageID", "1");
+		PageIDtoWordID = new Database("PageIDtoWordID", "1");
+		WordIDtoPageID = new Database("WordIDtoPageID", "1");
 		
 		// initialize pages_queue and visitied_pages
 		// vector for storing next pages (breadth-first-search)
@@ -187,7 +187,7 @@ public class Spider
 		PageIDtoLength.add(PageID, context_size+";"+extractHTMLLength()+";"+words.size());
 		
 		// count the word frequency
-		Index wordfreq = new Index("wordfreq", "1");
+		Database wordfreq = new Database("wordfreq", "1");
 		HTree hashtable = wordfreq.countWords(words);
 		// print the text frequency
 		FastIterator iter = hashtable.keys();
