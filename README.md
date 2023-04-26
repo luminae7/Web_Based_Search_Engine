@@ -3,7 +3,7 @@
 Given a starting URL and number of pages to be indexed, the Spider will crawl the site into the local database using a breadth-first search.
 
 First build the program by:
-> javac -cp combined.jar project/Index.java project/Spider.java project/Tester.java
+> javac -cp combined.jar project/*.java
 
 Then execute it by:
 > java -cp combined.jar:. project.Tester -links [the staring URL] -num [the required number of pages]

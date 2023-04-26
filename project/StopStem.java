@@ -1,4 +1,5 @@
-import IRUtilities.*;
+package project;
+
 import java.io.*;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;

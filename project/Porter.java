@@ -8,7 +8,7 @@
 
 */ 
 
-package IRUtilities;
+package project;
 
 import java.io.*;
 
