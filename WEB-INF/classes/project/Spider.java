@@ -163,13 +163,14 @@ public class Spider
 		}
 	}
 	
-	public static void print() throws IOException
+	public static String print() throws IOException
 	{
+		String result = "";
 		FastIterator iter = PageIDtoTitle.getKeys();
 		String PageID;
 		while ((PageID = (String)iter.next()) != null) {
 			// print Title
-			System.out.println(PageIDtoTitle.get(PageID));
+			result += PageIDtoTitle.get(PageID) + "<BR>";
 			
 			// print Title words
 			if (indexer.PageIDtoTitleWordID.get(PageID) != null) {
@@ -177,21 +178,21 @@ public class Spider
 				for (int i = 0; i < wordIDs.length; i++) {
 					String[] wordID_freq = wordIDs[i].split(" ");
 					String word = indexer.WordIDtoWord.get(wordID_freq[0]);
-					System.out.print(word+" "+wordID_freq[1]+"; ");
+					result += word+" "+wordID_freq[1]+"; ";
 				}
-				System.out.println("");
+				result += "<BR>";
 			}
 			
 			// print URL
-			System.out.println(PageIDtoURL.get(PageID));
+			result += PageIDtoURL.get(PageID) + "<BR>";
 			
 			// print Last Modified Date
-			System.out.print(PageIDtoTime.get(PageID));
+			result += PageIDtoTime.get(PageID);
 			// print Size of Page
 			String[] Length = indexer.PageIDtoLength.get(PageID).split(";");
-			System.out.println(", "+Length[0]+" (Content-Length), "+Length[1]+" (HTML Length)");
+			result += ", "+Length[0]+" (Content-Length), "+Length[1]+" (HTML Length)" + "<BR>";
 			// print number of words
-			System.out.println(Length[2]+" (Number of Words)");
+			result += Length[2] + " (Number of Words)" + "<BR>";
 			
 			// print word with freq (up to 10)
 			// if (indexer.PageIDtoWordID.get(PageID) != null) {
@@ -210,32 +211,33 @@ public class Spider
 				for (int i = 0; i < 5; i++) {
 					String[] wordID_freq = wordIDs[i].split(" ");
 					String word = indexer.WordIDtoWord.get(wordID_freq[0]);
-					System.out.print(word+" "+wordID_freq[1]+"; ");
+					result += word+" "+wordID_freq[1]+"; ";
 				}
-				System.out.println("");
+				result += "<BR>";
 			}
 			
 			// print parent links (up to 10)
-			System.out.println("Parent Links:");
+			result += "Parent Links:" + "<BR>";
 			if (ChildtoParent.get(PageID) != null) {
 				String[] linkIDs = ChildtoParent.get(PageID).split(";");
 				for (int i = 0; i < Math.min(10, linkIDs.length); i++) {
-					System.out.println(i+1+": "+PageIDtoURL.get(linkIDs[i]));
+					result += i+1+": "+PageIDtoURL.get(linkIDs[i]) + "<BR>";
 				}
 			}
 				
 			// print child links (up to 10)
-			System.out.println("Child Links:");
+			result += "Child Links:" + "<BR>";
 			if (ParenttoChild.get(PageID) != null) {
 				String[] linkIDs = ParenttoChild.get(PageID).split(";");
 				for (int i = 0; i < Math.min(10, linkIDs.length); i++) {
-					System.out.println(i+1+": "+PageIDtoURL.get(linkIDs[i]));
+					result += i+1+": "+PageIDtoURL.get(linkIDs[i]) + "<BR>";
 				}
 			}
 			
 			// print the dividing line
-			System.out.println("--------------------------------------------------");
+			result += "--------------------------------------------------" + "<BR>";
 		}
+		return result;
 		
 		// print everything in db for checking
 		// System.out.println("===== 1. PageID to URL =====");
@@ -366,13 +368,6 @@ public class Spider
 				}
 				else url = null;
 			}
-			
-			// print
-			print();
-			
-			// save the databases
-			saveDatabase();
-			
 		} else {
 			System.out.println("Usage: java -cp combined.jar:. project.main [-links] url [-num] NumOfPages");
 		}
