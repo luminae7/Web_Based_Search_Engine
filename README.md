@@ -16,7 +16,7 @@ The arguments links and num are optional. The initial value of the arguments are
 With -num 0, you can print the current data (fetched pages) stored in database.
 
 If you want to first clear the database saved previously:
-> rm \*.db \*.lg
+> rm database/*
 
 ## Others:
 

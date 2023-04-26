@@ -15,6 +15,7 @@ public class Index
 
 	Index(String recordmanager, String objectname) throws IOException
 	{
+		recordmanager = "database/" + recordmanager;
 		recman = RecordManagerFactory.createRecordManager(recordmanager);
 		long recid = recman.getNamedObject(objectname);
 		
