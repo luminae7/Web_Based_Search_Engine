@@ -12,6 +12,8 @@ public class Database
 {
 	private RecordManager recman;
 	private HTree hashtable;
+	public String[] TopFive;
+	public int[] TopFiveVal;
 
 	Database(String recordmanager, String objectname) throws IOException
 	{
@@ -25,6 +27,13 @@ public class Database
 		{
 			hashtable = HTree.createInstance(recman);
 			recman.setNamedObject(objectname, hashtable.getRecid() );
+		}
+		
+		TopFive = new String[5];
+		TopFiveVal = new int[5];
+		for (int i = 0; i < 5; i++) {
+			TopFive[i] = "";
+			TopFiveVal[i] = 0;
 		}
 	}
 	
@@ -82,10 +91,12 @@ public class Database
 		String text_word;
 		for (String text : texts) {
 			text_word = text.split(" ")[0];
-			// if same word then not add to result
-			if (text_word.compareTo(word)==0)
-				continue;
-			result += text + ";";
+			if (text_word.compareTo("")!=0) {
+				// if same word then not add to result
+				if (text_word.compareTo(word)==0)
+					continue;
+				result += text + ";";
+			}
 		}
 		result += word + " " + value + ";";
 		
@@ -133,11 +144,45 @@ public class Database
 			if (prev != null) {
 				int value = Integer.valueOf(prev);
 				hashtable.put(word, Integer.toString(value+1));
+				updateTopFive(word, value+1);
 			}
 			else {
 				hashtable.put(word, "1");
+				updateTopFive(word, 1);
 			}
 		}
 		return hashtable;
+	}
+	
+	public void updateTopFive(String word, int freq)
+	{
+		// if word already in top five
+		// update and sort
+		for (int i = 0; i < 5; i++) {
+			if (word.compareTo(TopFive[i]) == 0) {
+				TopFiveVal[i] = freq;
+				// swap to sort the array
+				for (int j = i; j > 0; j--) {
+					if (TopFiveVal[j] > TopFiveVal[j-1]) {
+						String tmpTopFive = TopFive[j-1];
+						TopFive[j-1] = TopFive[j];
+						TopFive[j] = tmpTopFive;
+						int tmpTopFiveVal = TopFiveVal[j-1];
+						TopFiveVal[j-1] = TopFiveVal[j];
+						TopFiveVal[j] = tmpTopFiveVal;
+					}
+				}
+				return;
+			}
+		}
+		// if word not in top five
+		// 
+		for (int i = 0; i < 5; i++) {
+			if (freq > TopFiveVal[i]) {
+				TopFive[i] = word;
+				TopFiveVal[i] = freq;
+				break;
+			}
+		}
 	}
 }

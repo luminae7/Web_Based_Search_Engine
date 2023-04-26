@@ -13,25 +13,12 @@ public class StopStem
 {
 	private Porter porter;
 	private HashSet<String> stopWords;
-	public boolean isStopWord(String str)
-	{
-		return stopWords.contains(str);	
-	}
+	
 	public StopStem(String str)
 	{
 		super();
 		porter = new Porter();
 		stopWords = new HashSet<String>();
-				
-		// use BufferedReader to extract the stopwords in stopwords.txt (path passed as parameter str)
-		// add them to HashSet<String> stopWords
-		// MODIFY THE BELOW CODE AND ADD YOUR CODES HERE
-		
-		// stopWords.add("is");
-		// stopWords.add("am");
-		// stopWords.add("are");
-		// stopWords.add("was");
-		// stopWords.add("were");
 		
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(str));
@@ -39,10 +26,17 @@ public class StopStem
 			while ((line = br.readLine()) != null) {
 				stopWords.add(line);
 			}
+			br.close();
 		} catch (IOException e) {
 			System.err.println(e.toString());
 		} 
 	}
+	
+	public boolean isStopWord(String str)
+	{
+		return stopWords.contains(str);	
+	}
+	
 	public String stem(String str)
 	{
 		return porter.stripAffixes(str);

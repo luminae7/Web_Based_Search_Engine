@@ -41,20 +41,14 @@ public class Spider
 	
 	private static Database PageIDtoTitle;
 	private static Database PageIDtoTime;
-	private static Database PageIDtoLength;
-	
-	private static Database WordIDtoWord;
-	private static Database WordtoWordID;
-	private static int WordIndex;
 	
 	private static Database ParenttoChild;
 	private static Database ChildtoParent;
 	
-	private static Database PageIDtoWordID;
-	private static Database WordIDtoPageID;
-	
 	private static Vector<String> pages_queue;
 	private static Vector<String> visited_pages;
+	
+	private static Indexer indexer;
 	
 	Spider(String _url) throws IOException
 	{
@@ -68,25 +62,18 @@ public class Spider
 		// create mapping table for PageID and Header
 		PageIDtoTitle = new Database("PageIDtoTitle", "1");
 		PageIDtoTime = new Database("PageIDtoTime", "1");
-		PageIDtoLength = new Database("PageIDtoLength", "1");
-		
-		// create mapping table for WordID and Word
-		WordIDtoWord = new Database("WordIDtoWord", "1");
-		WordtoWordID = new Database("WordtoWordID", "1");
-		WordIndex = WordIDtoWord.size();
 		
 		// create forward and backward index for Parent and Child
 		ParenttoChild = new Database("ParenttoChild", "1");
 		ChildtoParent = new Database("ChildtoParent", "1");
 		
-		// create forward and backward index for PageID and WordID
-		PageIDtoWordID = new Database("PageIDtoWordID", "1");
-		WordIDtoPageID = new Database("WordIDtoPageID", "1");
-		
 		// initialize pages_queue and visitied_pages
 		// vector for storing next pages (breadth-first-search)
 		pages_queue = new Vector<String>();
 		visited_pages = new Vector<String>();
+		
+		// create indexer for storing words in page and title
+		indexer = new Indexer();
 	}
 	
 	public static Date extractDate() throws IOException
@@ -105,60 +92,6 @@ public class Spider
 		return date;
 	}
 	
-	public static String extractHTMLLength() throws Exception
-	{
-		try {
-			// get the raw HTML from url
-	        StringBuilder result = new StringBuilder();
-	        URL urll = new URL(url);
-	        HttpURLConnection connection = (HttpURLConnection) urll.openConnection();
-	        connection.setRequestMethod("GET");
-	        try (BufferedReader reader = new BufferedReader(
-	        		new InputStreamReader(connection.getInputStream()))) {
-	    		for (String line; (line = reader.readLine()) != null; ) {
-	    			result.append(line);
-	        	}
-	        }
-	        return Integer.toString(result.toString().length());
-		}
-		catch(Exception e) {
-			// if cannot get the HTML, certification error
-			// return null
-			return null;
-		}
-	}
-	
-	public static Vector<String> extractWords() throws ParserException
-	{
-		// extract words in url and return them
-		Vector<String> words = new Vector<String>();
-		StringBean sb =  new StringBean();
-		sb.setLinks(true);
-		sb.setURL(url);
-		
-		// split with space characters
-		String[] strings = sb.getStrings().split("\\s+");
-		
-		// add the strings into vector of strings
-		for (String string : strings) {
-			words.add(string);
-		}
-		return words;
-	}
-	
-	public static Vector<String> extractLinks() throws ParserException
-	{
-		// extract links in url and return them
-		Vector<String> links = new Vector<String>();
-		LinkBean lb = new LinkBean();
-		lb.setURL(url);
-		URL[] url = lb.getLinks();
-		for (int i = 0; i < url.length; i++) {
-			links.add(url[i].toString());
-		}
-		return links;
-	}
-	
 	public static void storeTitle(String PageID) throws IOException
 	{
 		// print the title
@@ -172,56 +105,22 @@ public class Spider
 		}
 		// store the title to PageIDtoTitle
 		PageIDtoTitle.add(PageID, title);
+		
+		// store the title words
+		indexer.storeTitle(PageID, title);
 	}
 	
-	public static void storeWords(String PageID) throws Exception
+	public static Vector<String> extractLinks() throws ParserException
 	{
-		// get the text on the web page
-		Vector<String> words = extractWords();
-		
-		// print the size of the page
-		URL urll = new URL(url);
-		URLConnection connection = urll.openConnection();
-		String context_size = connection.getHeaderField("Content-Length");
-		// save all context-length, HTML Length and number of words extracted
-		PageIDtoLength.add(PageID, context_size+";"+extractHTMLLength()+";"+words.size());
-		
-		// count the word frequency
-		Database wordfreq = new Database("wordfreq", "1");
-		HTree hashtable = wordfreq.countWords(words);
-		// print the text frequency
-		FastIterator iter = hashtable.keys();
-		String key;
-		String WordID;
-		String freq;
-		int count = 0;
-		while((key = (String)iter.next())!=null)
-		{
-			freq = (String) hashtable.get(key);
-			
-			WordID = WordtoWordID.get(key);
-			// if new word then add to WordIDtoWord table
-			if (WordID == null) {
-				WordIDtoWord.add(Integer.toString(WordIndex), key);
-				WordtoWordID.add(key, Integer.toString(WordIndex));
-				WordID = Integer.toString(WordIndex);
-				WordIndex++;
-				
-				// add to WordIDtoPageID
-				WordIDtoPageID.add(WordID, PageID+" "+freq+";");
-			} else {
-				// add to WordIDtoPageID
-				WordIDtoPageID.appendFreq(WordID, PageID, freq);
-			}
-			
-			// add to PageIDtoWordID
-			if (count == 0)
-				PageIDtoWordID.add(PageID, WordID+" "+freq+";");
-			else
-				PageIDtoWordID.appendFreq(PageID, WordID, freq);
-			
-			count++;
+		// extract links in url and return them
+		Vector<String> links = new Vector<String>();
+		LinkBean lb = new LinkBean();
+		lb.setURL(url);
+		URL[] url = lb.getLinks();
+		for (int i = 0; i < url.length; i++) {
+			links.add(url[i].toString());
 		}
+		return links;
 	}
 	
 	public static void storeLinks(String PageID) throws ParserException, IOException
@@ -272,33 +171,65 @@ public class Spider
 			// print Title
 			System.out.println(PageIDtoTitle.get(PageID));
 			
+			// print Title words
+			if (indexer.PageIDtoTitleWordID.get(PageID) != null) {
+				String[] wordIDs = indexer.PageIDtoTitleWordID.get(PageID).split(";");
+				for (int i = 0; i < wordIDs.length; i++) {
+					String[] wordID_freq = wordIDs[i].split(" ");
+					String word = indexer.WordIDtoWord.get(wordID_freq[0]);
+					System.out.print(word+" "+wordID_freq[1]+"; ");
+				}
+				System.out.println("");
+			}
+			
 			// print URL
 			System.out.println(PageIDtoURL.get(PageID));
 			
 			// print Last Modified Date
 			System.out.print(PageIDtoTime.get(PageID));
 			// print Size of Page
-			String[] Length = PageIDtoLength.get(PageID).split(";");
+			String[] Length = indexer.PageIDtoLength.get(PageID).split(";");
 			System.out.println(", "+Length[0]+" (Content-Length), "+Length[1]+" (HTML Length)");
 			// print number of words
 			System.out.println(Length[2]+" (Number of Words)");
 			
 			// print word with freq (up to 10)
-			if (PageIDtoWordID.get(PageID) != null) {
-				String[] wordIDs = PageIDtoWordID.get(PageID).split(";");
-				for (int i = 0; i < 10; i++) {
+			// if (indexer.PageIDtoWordID.get(PageID) != null) {
+			// 	 String[] wordIDs = indexer.PageIDtoWordID.get(PageID).split(";");
+			//	 for (int i = 0; i < 10; i++) {
+			//		 String[] wordID_freq = wordIDs[i].split(" ");
+			//		 String word = indexer.WordIDtoWord.get(wordID_freq[0]);
+			//		 System.out.print(word+" "+wordID_freq[1]+"; ");
+			//	 }
+			//	 System.out.println("");
+			// }
+			
+			// print word with top five freq (up to 5)
+			if (indexer.PageIDtoTopFiveWordID.get(PageID) != null) {
+				String[] wordIDs = indexer.PageIDtoTopFiveWordID.get(PageID).split(";");
+				for (int i = 0; i < 5; i++) {
 					String[] wordID_freq = wordIDs[i].split(" ");
-					String word = WordIDtoWord.get(wordID_freq[0]);
+					String word = indexer.WordIDtoWord.get(wordID_freq[0]);
 					System.out.print(word+" "+wordID_freq[1]+"; ");
 				}
 				System.out.println("");
 			}
+			
+			// print parent links (up to 10)
+			System.out.println("Parent Links:");
+			if (ChildtoParent.get(PageID) != null) {
+				String[] linkIDs = ChildtoParent.get(PageID).split(";");
+				for (int i = 0; i < Math.min(10, linkIDs.length); i++) {
+					System.out.println(i+1+": "+PageIDtoURL.get(linkIDs[i]));
+				}
+			}
 				
 			// print child links (up to 10)
+			System.out.println("Child Links:");
 			if (ParenttoChild.get(PageID) != null) {
 				String[] linkIDs = ParenttoChild.get(PageID).split(";");
-				for (int i = 0; i < 10; i++) {
-					System.out.println(PageIDtoURL.get(linkIDs[i]));
+				for (int i = 0; i < Math.min(10, linkIDs.length); i++) {
+					System.out.println(i+1+": "+PageIDtoURL.get(linkIDs[i]));
 				}
 			}
 			
@@ -316,19 +247,25 @@ public class Spider
 		// System.out.println("===== 4. PageID to Time =====");
 		// PageIDtoTime.print();
 		// System.out.println("===== 5. PageID to Length =====");
-		// PageIDtoLength.print();
+		// indexer.PageIDtoLength.print();
 		// System.out.println("===== 6. WordID to Word =====");
-		// WordIDtoWord.print();
+		// indexer.WordIDtoWord.print();
 		// System.out.println("===== 7. Word to WordID =====");
-		// WordtoWordID.print();
+		// indexer.WordtoWordID.print();
 		// System.out.println("===== 8. Parent to Child =====");
 		// ParenttoChild.print();
 		// System.out.println("===== 9. Child to Parent =====");
 		// ChildtoParent.print();
-		// System.out.println("===== 10. PageID to WordID =====");
-		// PageIDtoWordID.print();
-		// System.out.println("===== 11. WordID to PageID =====");
-		// WordIDtoPageID.print();
+		// System.out.println("===== 10. PageID to TitleWordID =====");
+		// indexer.PageIDtoTitleWordID.print();
+		// System.out.println("===== 11. TitleWordID to PageID =====");
+		// indexer.TitleWordIDtoPageID.print();
+		// System.out.println("===== 12. PageID to WordID =====");
+		// indexer.PageIDtoWordID.print();
+		// System.out.println("===== 13. WordID to PageID =====");
+		// indexer.WordIDtoPageID.print();
+		// System.out.println("===== 14. PageID to TopFiveWordID =====");
+		// indexer.PageIDtoTopFiveWordID.print();
 	}
 	
 	public static void saveDatabase() throws IOException
@@ -338,13 +275,17 @@ public class Spider
 		URLtoPageID.save();
 		PageIDtoTitle.save();
 		PageIDtoTime.save();
-		PageIDtoLength.save();
-		WordIDtoWord.save();
-		WordtoWordID.save();
+		indexer.PageIDtoLength.save();
+		indexer.WordIDtoWord.save();
+		indexer.WordtoWordID.save();
 		ParenttoChild.save();
 		ChildtoParent.save();
-		PageIDtoWordID.save();
-		WordIDtoPageID.save();
+		indexer.PageIDtoWordID.save();
+		indexer.WordIDtoPageID.save();
+		// new
+		indexer.PageIDtoTopFiveWordID.save();
+		indexer.PageIDtoTitleWordID.save();
+		indexer.TitleWordIDtoPageID.save();
 	}
 	
 	public void crawl(int num) throws Exception
@@ -409,7 +350,7 @@ public class Spider
 				storeTitle(PageID);
 				
 				// store the words from the page
-				storeWords(PageID);
+				indexer.storeWords(PageID, url);
 				
 				// store the links from the page
 				storeLinks(PageID);
