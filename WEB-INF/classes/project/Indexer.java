@@ -86,7 +86,7 @@ public class Indexer {
 		// stop and stem the words
 		for (String string : strings)
 			if (!stopStem.isStopWord(string.toLowerCase()))
-				words.add(stopStem.stem(string.toLowerCase()));
+				words.add(stopStem.stem(string.toLowerCase()).trim());
 		Database wordfreq = new Database("titlewordfreq", "1");
 		HTree hashtable = wordfreq.countWords(words);
 		
@@ -141,10 +141,9 @@ public class Indexer {
 		// add the strings into vector of strings
 		for (String string : strings) {
 			if (!stopStem.isStopWord(string.toLowerCase())) {
-				words.add(stopStem.stem(string.toLowerCase()));
+				words.add(stopStem.stem(string.toLowerCase()).trim());
 			}
 		}
-		
 		return words;
 	}
 	
