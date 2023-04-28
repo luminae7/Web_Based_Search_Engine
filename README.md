@@ -4,9 +4,9 @@ Given a starting URL and number of pages to be indexed, the Spider will crawl th
 
 First Add environment var:
 
-CATALINA HOME = "your tomcat path (e.g. C:\apache-tomcat-9.0.70)"
+**CATALINA HOME** = "your tomcat path (e.g. C:\apache-tomcat-9.0.70)"
 
-JAVA HOME = "your jdk path (e.g. C:\Program Files\Java\jdk-19)"
+**JAVA HOME** = "your jdk path (e.g. C:\Program Files\Java\jdk-19)"
 
 Go to %CATALINA_HOME%\webapps and create a folder "Search"
 
@@ -18,10 +18,12 @@ Then build the program by:
 Then start it by:
 > %CATALINA_HOME%\bin\startup.bat
 
-And shut it down by:
+Open in your browser: ***http://localhost:8080/Search/Search.html*** to test your program
+
+Shut it down by:
 > %CATALINA_HOME%\bin\shutdown.bat
 
-The inputs link and number of pages to fetch are optional. The initial values of the inputs are https://www.cse.ust.hk/~kwtleung/COMP4321/testpage.htm and 300.
+The inputs link and number of pages to fetch are optional. The initial values of the inputs are **https://www.cse.ust.hk/~kwtleung/COMP4321/testpage.htm** and **300** (if you enter nothing in the Input Number of Pages to Fetch).
 
 With -num 0, you can print the current data (fetched pages) stored in database. Or you can press the button "Database".
 
