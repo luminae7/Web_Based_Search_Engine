@@ -62,7 +62,7 @@ spider.crawl(num);
 <%
 Vector<String> results = spider.print();
 %>
-<table align=center border=1>
+<table align=center border=1 style="background-color:#e8f4f8">
 <%
 for (String result : results) {
 %>
@@ -78,7 +78,8 @@ for (String result : results) {
 </div>
 
 <%
-	spider.saveDatabase();
+spider.tfxidf();
+spider.saveDatabase();
 %>
 
 </body>

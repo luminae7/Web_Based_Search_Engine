@@ -86,27 +86,37 @@ You are searching for:
 
 <div>
 <%
-Vector<String> results = se.print();
+Vector<Double> scores = se.printScores();
+Vector<String> results = se.printResults();
 int i = 0;
 int total = results.size();
 %>
-<table align=center border=1>
+<table align=center border=1 style="background-color:#e8f4f8">
 <%
 for (String result : results) {
+
+    if (scores.elementAt(i) != 0.0) {
 %>
     <tr>
+    <td valign="top" style="padding: 20px;">
+<%
+        int score = (int) (scores.elementAt(i) / scores.elementAt(0) * 100);
+        out.print("<b>" + score + "</b>");
+%>
+        </td>
         <td>
         <BR>
 <%
-    out.print(result);
-    String PageID = se.getPageID(i);
+        out.print(result);
+        String PageID = se.getPageID(i);
 %>
 <BR>
 <input type="submit" name="similar" value="   Similar Pages   " id="<%=PageID%>" onClick="similar(this,<%=total%>)">
 <BR>
 <BR>
 <%
-    i++;
+        i++;
+    }
 }
 %>
         </td>

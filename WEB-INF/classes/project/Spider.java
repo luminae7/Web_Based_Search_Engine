@@ -50,6 +50,9 @@ public class Spider
 	
 	private static Indexer indexer;
 	
+	private static Database PageIDtoTFxIDF;
+	private static double[][] tfxidf;
+	
 	public Spider(String _url) throws IOException
 	{
 		url = _url;
@@ -74,6 +77,9 @@ public class Spider
 		
 		// create indexer for storing words in page and title
 		indexer = new Indexer();
+		
+		// create forward index for PageID and TFxIDF
+		PageIDtoTFxIDF = new Database("PageIDtoTFxIDF", "1");
 	}
 	
 	public static Date extractDate() throws IOException
@@ -160,6 +166,62 @@ public class Spider
 			} else {
 				ChildtoParent.append(ChildPageID, PageID);
 			}
+		}
+	}
+	
+	public static void tfxidf() throws IOException
+	{	
+		tfxidf = new double[PageIDtoTitle.size()][indexer.WordIDtoWord.size()];
+		FastIterator iter = indexer.WordIDtoWord.getKeys();
+		String WordID;
+		
+		// calculate tfxidf
+		while ((WordID = (String)iter.next()) != null) {
+			
+			if (WordID != null) {
+				
+				int wordID = Integer.valueOf(WordID);
+				
+				// tf idf
+				// get pages that contain this word
+				if (indexer.WordIDtoPageID.get(WordID).compareTo("") != 0) {
+					
+					String[] pageIDs = indexer.WordIDtoPageID.get(WordID).split(";");
+					
+					// tf idf
+					int df = pageIDs.length;
+					int N = PageIDtoTitle.size();
+					for (int i = 0; i < pageIDs.length; i++) {
+						String[] pages_freq = pageIDs[i].split(" ");
+						int pageID = Integer.valueOf(pages_freq[0]);
+						int freq = Integer.valueOf(pages_freq[1]);
+						// tf
+						tfxidf[pageID][wordID] = freq;
+						// idf
+						tfxidf[pageID][wordID] *= Math.log(N / df) / Math.log(2);
+						// max(tf)
+						String[] words = indexer.PageIDtoTopFiveWordID.get(pages_freq[0]).split(";");
+						String maxFreq = words[0].split(" ")[1];
+						tfxidf[pageID][wordID] /= Integer.valueOf(maxFreq);
+					}
+				}
+			}
+		}
+		
+		iter = PageIDtoTitle.getKeys();
+		String PageID;
+		
+		// store into database
+		while ((PageID = (String)iter.next()) != null) {
+			
+			int pageID = Integer.valueOf(PageID);
+			String result = "";
+			
+			for (double val : tfxidf[pageID]) {
+				result += val + ";";
+			}
+			
+			PageIDtoTFxIDF.add(PageID, result);
 		}
 	}
 	
@@ -266,6 +328,7 @@ public class Spider
 		indexer.PageIDtoTopFiveWordID.save();
 		indexer.PageIDtoTitleWordID.save();
 		indexer.TitleWordIDtoPageID.save();
+		PageIDtoTFxIDF.save();
 	}
 	
 	public void crawl(int num) throws Exception

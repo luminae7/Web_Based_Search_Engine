@@ -15,6 +15,8 @@ import org.htmlparser.filters.NodeClassFilter;
 import org.htmlparser.tags.LinkTag;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Vector;
 import java.util.StringTokenizer;
 import java.util.Map;
@@ -36,7 +38,9 @@ public class SearchEngine
 	private static String query;
 	private static Vector<String> stopStemQuery;
 	
-	private static Vector<String> pages;
+	private static double[][] fiftyPagesVal;
+	private static Vector<String> fiftyPages;
+	private static Vector<Double> fiftyVal;
 	
 	private static Database PageIDtoURL;
 	private static Database URLtoPageID;
@@ -58,6 +62,8 @@ public class SearchEngine
 	public static Database WordIDtoPageID;
 	public static Database PageIDtoTopFiveWordID;
 	
+	private static Database PageIDtoTFxIDF;
+	
 	private static StopStem stopStem;
 	
 	public SearchEngine(String _query) throws IOException
@@ -66,9 +72,6 @@ public class SearchEngine
 		// the query entered by the user
 		query = _query;
 		stopStemQuery = new Vector<String>();
-		
-		// the pages fit the query
-		pages = new Vector<String>();
 		
 		// find mapping table for PageID and URL
 		PageIDtoURL = new Database("PageIDtoURL", "1");
@@ -97,8 +100,18 @@ public class SearchEngine
 		// find forward index for PageID and Top Five WordID
 		PageIDtoTopFiveWordID = new Database("PageIDtoTopFiveWordID", "1");
 		
+		// find forward index for PageID and TFxIDF
+		PageIDtoTFxIDF = new Database("PageIDtoTFxIDF", "1");
+		
 		stopStem = new StopStem("stopwords.txt");
 		
+		// top 50 pages and val
+		fiftyPagesVal = new double[PageIDtoTitle.size()][2];
+		for (int i = 0; i < PageIDtoTitle.size(); i++) {
+			fiftyPagesVal[i][0] = i;
+		}
+		fiftyPages = new Vector<String>();
+		fiftyVal = new Vector<Double>();
 	}
 	
 	private static void stopStem()
@@ -121,8 +134,10 @@ public class SearchEngine
 		stopStem();
 		
 		for (String word : stopStemQuery) {
+			
 			// get wordID of each word
 			String wordID = WordtoWordID.get(word);
+			
 			if (wordID != null) {
 				
 				// get pages whose title contains this word
@@ -130,21 +145,31 @@ public class SearchEngine
 					String[] pageIDs_title = TitleWordIDtoPageID.get(wordID).split(";");
 					for (int i = 0; i < pageIDs_title.length; i++) {
 						String[] pages_freq = pageIDs_title[i].split(" ");
-						if (!pages.contains(pages_freq[0]))
-							pages.add(pages_freq[0]);
+							
+						fiftyPagesVal[Integer.valueOf(pages_freq[0])][1] += 3 * Integer.valueOf(pages_freq[1]);
 					}
 				}
 				
-				// get pages that contain this word
+				// get pages that contains this word
 				if (WordIDtoPageID.get(wordID).compareTo("") != 0) {
 					String[] pageIDs = WordIDtoPageID.get(wordID).split(";");
 					for (int i = 0; i < pageIDs.length; i++) {
 						String[] pages_freq = pageIDs[i].split(" ");
-						if (!pages.contains(pages_freq[0]))
-							pages.add(pages_freq[0]);
+						String[] page_scores = PageIDtoTFxIDF.get(pages_freq[0]).split(";");
+						double page_score = Double.valueOf(page_scores[Integer.valueOf(wordID)]);
+							
+						fiftyPagesVal[Integer.valueOf(pages_freq[0])][1] += page_score;
 					}
 				}
 			}
+		}
+		
+		// find and normalize top 50 score to [0, 100]
+		Arrays.sort(fiftyPagesVal, (a, b) -> Double.compare(b[1], a[1]));
+		
+		for (int i = 0; i < Math.min(50, PageIDtoTitle.size()); i++) {
+			fiftyPages.add(String.valueOf((int)fiftyPagesVal[i][0]));
+			fiftyVal.add(fiftyPagesVal[i][1]);
 		}
 	}
 	
@@ -158,16 +183,21 @@ public class SearchEngine
 	
 	public static String getPageID(int i)
 	{
-		return pages.elementAt(i);
+		return fiftyPages.elementAt(i);
 	}
 	
-	public static Vector<String> print() throws IOException
+	public static Vector<Double> printScores()
+	{
+		return fiftyVal;
+	}
+	
+	public static Vector<String> printResults() throws IOException
 	{	
 		Vector<String> results = new Vector<String>();
 		
 		int num = 0;
 		
-		for (String PageID : pages) {
+		for (String PageID : fiftyPages) {
 			
 			if (num == 50)
 				break;
