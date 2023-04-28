@@ -163,33 +163,28 @@ public class Spider
 		}
 	}
 	
-	public static Vector<String> print() throws IOException
+	public static String print() throws IOException
 	{
-		Vector<String> results = new Vector<String>();
+		String result = "";
 		FastIterator iter = PageIDtoTitle.getKeys();
 		String PageID;
 		while ((PageID = (String)iter.next()) != null) {
-			
-			String result = "";
-			
-			String _url = PageIDtoURL.get(PageID);
-			
 			// print Title
-			result += "=== " + "<b>" + "<a href="+_url+">" + PageIDtoTitle.get(PageID) + "</a>" + "</b>" + " ===" + "<BR><BR>";
+			result += PageIDtoTitle.get(PageID) + "<BR>";
 			
 			// print Title words
-			// if (PageIDtoTitleWordID.get(PageID) != null) {
-			// 	String[] wordIDs = PageIDtoTitleWordID.get(PageID).split(";");
-			//	for (int i = 0; i < wordIDs.length; i++) {
-			//		String[] wordID_freq = wordIDs[i].split(" ");
-			//		String word = WordIDtoWord.get(wordID_freq[0]);
-			//		result += word+" "+wordID_freq[1]+"; ";
-			//	}
-			//	result += "<BR>";
-			// }
+			if (indexer.PageIDtoTitleWordID.get(PageID) != null) {
+				String[] wordIDs = indexer.PageIDtoTitleWordID.get(PageID).split(";");
+				for (int i = 0; i < wordIDs.length; i++) {
+					String[] wordID_freq = wordIDs[i].split(" ");
+					String word = indexer.WordIDtoWord.get(wordID_freq[0]);
+					result += word+" "+wordID_freq[1]+"; ";
+				}
+				result += "<BR>";
+			}
 			
 			// print URL
-			result += "<a href="+_url+">" + PageIDtoURL.get(PageID) + "</a>" + "<BR><BR>";
+			result += PageIDtoURL.get(PageID) + "<BR>";
 			
 			// print Last Modified Date
 			result += PageIDtoTime.get(PageID);
@@ -197,7 +192,7 @@ public class Spider
 			String[] Length = indexer.PageIDtoLength.get(PageID).split(";");
 			result += ", "+Length[0]+" (Content-Length), "+Length[1]+" (HTML Length)" + "<BR>";
 			// print number of words
-			result += Length[2] + " (Number of Words)" + "<BR><BR>";
+			result += Length[2] + " (Number of Words)" + "<BR>";
 			
 			// print word with freq (up to 10)
 			// if (indexer.PageIDtoWordID.get(PageID) != null) {
@@ -216,7 +211,7 @@ public class Spider
 				for (int i = 0; i < 5; i++) {
 					String[] wordID_freq = wordIDs[i].split(" ");
 					String word = indexer.WordIDtoWord.get(wordID_freq[0]);
-					result += word+" "+wordID_freq[1]+"<BR>";
+					result += word+" "+wordID_freq[1]+"; ";
 				}
 				result += "<BR>";
 			}
@@ -226,26 +221,53 @@ public class Spider
 			if (ChildtoParent.get(PageID) != null) {
 				String[] linkIDs = ChildtoParent.get(PageID).split(";");
 				for (int i = 0; i < Math.min(10, linkIDs.length); i++) {
-					String url = PageIDtoURL.get(linkIDs[i]);
-					result += i+1+": "+"<a href="+url+">" + url + "</a>" + "<BR>";
+					result += i+1+": "+PageIDtoURL.get(linkIDs[i]) + "<BR>";
 				}
 			}
-			result += "<BR>";
 				
 			// print child links (up to 10)
 			result += "Child Links:" + "<BR>";
 			if (ParenttoChild.get(PageID) != null) {
 				String[] linkIDs = ParenttoChild.get(PageID).split(";");
 				for (int i = 0; i < Math.min(10, linkIDs.length); i++) {
-					String url = PageIDtoURL.get(linkIDs[i]);
-					result += i+1+": "+"<a href="+url+">" + url + "</a>" + "<BR>";
+					result += i+1+": "+PageIDtoURL.get(linkIDs[i]) + "<BR>";
 				}
 			}
-			result += "<BR>";
 			
-			results.add(result);
+			// print the dividing line
+			result += "--------------------------------------------------" + "<BR>";
 		}
-		return results;
+		return result;
+		
+		// print everything in db for checking
+		// System.out.println("===== 1. PageID to URL =====");
+		// PageIDtoURL.print();
+		// System.out.println("===== 2. URL to PageID =====");
+		// URLtoPageID.print();
+		// System.out.println("===== 3. PageID to Title =====");
+		// PageIDtoTitle.print();
+		// System.out.println("===== 4. PageID to Time =====");
+		// PageIDtoTime.print();
+		// System.out.println("===== 5. PageID to Length =====");
+		// indexer.PageIDtoLength.print();
+		// System.out.println("===== 6. WordID to Word =====");
+		// indexer.WordIDtoWord.print();
+		// System.out.println("===== 7. Word to WordID =====");
+		// indexer.WordtoWordID.print();
+		// System.out.println("===== 8. Parent to Child =====");
+		// ParenttoChild.print();
+		// System.out.println("===== 9. Child to Parent =====");
+		// ChildtoParent.print();
+		// System.out.println("===== 10. PageID to TitleWordID =====");
+		// indexer.PageIDtoTitleWordID.print();
+		// System.out.println("===== 11. TitleWordID to PageID =====");
+		// indexer.TitleWordIDtoPageID.print();
+		// System.out.println("===== 12. PageID to WordID =====");
+		// indexer.PageIDtoWordID.print();
+		// System.out.println("===== 13. WordID to PageID =====");
+		// indexer.WordIDtoPageID.print();
+		// System.out.println("===== 14. PageID to TopFiveWordID =====");
+		// indexer.PageIDtoTopFiveWordID.print();
 	}
 	
 	public static void saveDatabase() throws IOException
@@ -284,7 +306,7 @@ public class Spider
 				
 				// if breadth first search has done
 				if (url == null)
-					break;
+					continue;
 				
 				
 				String PageID = URLtoPageID.get(url);
@@ -314,13 +336,8 @@ public class Spider
 						// assign next page to url
 						if (!pages_queue.isEmpty())
 							// if visited this round, then next page
-							while (visited_pages.contains(url = pages_queue.remove(0))) {
-								if (pages_queue.isEmpty()) {
-									url = null;
-									break;
-								}
+							while (visited_pages.contains(url = pages_queue.remove(0)))
 								continue;
-							}
 						else
 							url = null;
 						continue;
@@ -346,13 +363,8 @@ public class Spider
 				// assign next page to url
 				if (!pages_queue.isEmpty()) {
 					// if visited this round, then next page
-					while (visited_pages.contains(url = pages_queue.remove(0))) {
-						if (pages_queue.isEmpty()) {
-							url = null;
-							break;
-						}
+					while (visited_pages.contains(url = pages_queue.remove(0)))
 						continue;
-					}
 				}
 				else url = null;
 			}

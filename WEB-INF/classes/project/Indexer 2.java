@@ -23,12 +23,12 @@ public class Indexer {
 	public Database WordtoWordID;
 	private static int WordIndex;
 	
-	public Database PageIDtoTitleWordID;
-	public Database TitleWordIDtoPageID;
-	
 	public Database PageIDtoWordID;
 	public Database WordIDtoPageID;
 	public Database PageIDtoTopFiveWordID;
+	
+	public Database PageIDtoTitleWordID;
+	public Database TitleWordIDtoPageID;
 	
 	private static StopStem stopStem;
 	
@@ -41,16 +41,16 @@ public class Indexer {
 		WordIDtoWord = new Database("WordIDtoWord", "1");
 		WordtoWordID = new Database("WordtoWordID", "1");
 		WordIndex = WordIDtoWord.size();
-		
-		// create forward and backward index for PageID and Title's WordID
-		PageIDtoTitleWordID = new Database("PageIDtoTitleWordID", "1");
-		TitleWordIDtoPageID = new Database("TitleWordIDtoPageID", "1");
 				
 		// create forward and backward index for PageID and WordID
 		PageIDtoWordID = new Database("PageIDtoWordID", "1");
 		WordIDtoPageID = new Database("WordIDtoPageID", "1");
 		// create forward index for PageID and Top Five WordID
 		PageIDtoTopFiveWordID = new Database("PageIDtoTopFiveWordID", "1");
+		
+		// create forward and backward index for PageID and Title's WordID
+		PageIDtoTitleWordID = new Database("PageIDtoTitleWordID", "1");
+		TitleWordIDtoPageID = new Database("TitleWordIDtoPageID", "1");
 		
 		stopStem = new StopStem("stopwords.txt");
 	}
@@ -84,12 +84,9 @@ public class Indexer {
 		String[] strings = title.split("\\s+");
 		Vector<String> words = new Vector<String>();
 		// stop and stem the words
-		for (String string : strings) {
-			string = string.replaceAll("[^A-Za-z0-9 ]", "").toLowerCase();
-			if (string.compareTo("")!=0)
-				if (!stopStem.isStopWord(string))
-					words.add(stopStem.stem(string));
-		}
+		for (String string : strings)
+			if (!stopStem.isStopWord(string.toLowerCase()))
+				words.add(stopStem.stem(string.toLowerCase()).trim());
 		Database wordfreq = new Database("titlewordfreq", "1");
 		HTree hashtable = wordfreq.countWords(words);
 		
@@ -143,10 +140,9 @@ public class Indexer {
 		// stop and stem the string
 		// add the strings into vector of strings
 		for (String string : strings) {
-			string = string.replaceAll("[^A-Za-z0-9 ]", "").toLowerCase();
-			if (string.compareTo("")!=0)
-				if (!stopStem.isStopWord(string))
-					words.add(stopStem.stem(string));
+			if (!stopStem.isStopWord(string.toLowerCase())) {
+				words.add(stopStem.stem(string.toLowerCase()).trim());
+			}
 		}
 		return words;
 	}

@@ -15,7 +15,7 @@ public class Database
 	public String[] TopFive;
 	public int[] TopFiveVal;
 
-	Database(String recordmanager, String objectname) throws IOException
+	public Database(String recordmanager, String objectname) throws IOException
 	{
 		System.out.println(1);
 		recordmanager = "database/" + recordmanager;
