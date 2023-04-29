@@ -3,7 +3,7 @@
 
 <html>
 <head>
-<title> Results </title>
+<title> Database </title>
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 <script>
 $(document).ready(function(e) {
@@ -23,6 +23,11 @@ $(document).ready(function(e) {
         }
 	}); 
 });
+</script>
+<script type="text/javascript">
+function alertName(){
+alert("Done!");
+} 
 </script>
 <style type="text/css">
 input {
@@ -58,6 +63,10 @@ Spider spider = new Spider(url);
 spider.crawl(num);
 %>
 
+<%
+spider.tfxidf();
+%>
+
 <div>
 <%
 Vector<String> results = spider.print();
@@ -71,16 +80,19 @@ for (String result : results) {
         <BR>
 <%
     out.print(result);
-}
 %>
         </td>
     </tr>
+<%
+}
+%>
 </div>
 
 <%
-spider.tfxidf();
 spider.saveDatabase();
 %>
 
 </body>
 </html>
+
+<script type="text/javascript"> window.onload = alertName; </script>

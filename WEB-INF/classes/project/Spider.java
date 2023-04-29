@@ -18,6 +18,7 @@ import org.htmlparser.util.ParserException;
 import java.util.Vector;
 import java.util.StringTokenizer;
 import java.util.Map;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.net.URL;
@@ -189,8 +190,8 @@ public class Spider
 					String[] pageIDs = indexer.WordIDtoPageID.get(WordID).split(";");
 					
 					// tf idf
-					int df = pageIDs.length;
-					int N = PageIDtoTitle.size();
+					double df = pageIDs.length;
+					double N = PageIDtoTitle.size();
 					for (int i = 0; i < pageIDs.length; i++) {
 						String[] pages_freq = pageIDs[i].split(" ");
 						int pageID = Integer.valueOf(pages_freq[0]);
@@ -306,6 +307,18 @@ public class Spider
 			result += "<BR>";
 			
 			results.add(result);
+		}
+		return results;
+	}
+	
+	public static Vector<String> printWords() throws IOException
+	{
+		Collections.sort(null);
+		Vector<String> results = new Vector<String>();
+		FastIterator iter = indexer.WordtoWordID.getKeys();
+		String Word;
+		while ((Word = (String)iter.next()) != null) {
+			results.add(Word);
 		}
 		return results;
 	}

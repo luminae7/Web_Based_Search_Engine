@@ -52,7 +52,7 @@ public class Indexer {
 		// create forward index for PageID and Top Five WordID
 		PageIDtoTopFiveWordID = new Database("PageIDtoTopFiveWordID", "1");
 		
-		stopStem = new StopStem("stopwords.txt");
+		stopStem = new StopStem("stopwords.txt", "sensitivewords.txt");
 	}
 	
 	public static String extractHTMLLength(String url) throws Exception

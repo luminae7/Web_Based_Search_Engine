@@ -13,18 +13,26 @@ public class StopStem
 {
 	private Porter porter;
 	private HashSet<String> stopWords;
+	private HashSet<String> sensitiveWords;
 	
-	public StopStem(String str)
+	public StopStem(String stopwords, String sensitivewords)
 	{
 		super();
 		porter = new Porter();
 		stopWords = new HashSet<String>();
+		sensitiveWords = new HashSet<String>();
 		
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(str));
+			BufferedReader br = new BufferedReader(new FileReader(stopwords));
 			String line;
 			while ((line = br.readLine()) != null) {
 				stopWords.add(line);
+			}
+			br.close();
+			
+			br = new BufferedReader(new FileReader(sensitivewords));
+			while ((line = br.readLine()) != null) {
+				sensitiveWords.add(line);
 			}
 			br.close();
 		} catch (IOException e) {
@@ -35,6 +43,11 @@ public class StopStem
 	public boolean isStopWord(String str)
 	{
 		return stopWords.contains(str);	
+	}
+	
+	public boolean isSensitiveWord(String str)
+	{
+		return sensitiveWords.contains(str);	
 	}
 	
 	public String stem(String str)

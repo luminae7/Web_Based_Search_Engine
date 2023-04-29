@@ -23,10 +23,10 @@ $(document).ready(function(e) {
         }
 	}); 
 });
-function similar(x){
+function similar(x) {
     document.getElementById("hid1").value = x.id;
     document.forms[0].submit();
-    out.print("HIHI");
+    out.print("");
     window.location.reload();
 }
 </script>
@@ -46,14 +46,16 @@ h3 {
 <body>
 
 <form action="Search.jsp">
-<input type="hidden" id="hid1"  name="hid1">
+<input type="hidden" id="hid1" name="similar">
 </form>
 
 <%
 String query = "";
-if(request.getParameter("hid1")!=null)
+String s[] = request.getParameterValues("word");
+// from similar pages
+if (request.getParameter("similar") != null)
 {
-    String PageID = request.getParameter("hid1");
+    String PageID = request.getParameter("similar");
 	Database PageIDtoTopFiveWordID = new Database("PageIDtoTopFiveWordID", "1");
     Database WordIDtoWord = new Database("WordIDtoWord", "1");
 
@@ -64,16 +66,36 @@ if(request.getParameter("hid1")!=null)
         query += word + " ";
     }
 }
+// from dictionary
+else if (s != null && s.length != 0) {
+    for (String word : s)
+        query += word + " "; 
+}
+// from search
 else if (request.getParameter("query") != null) {
     query = request.getParameter("query");
 }
 SearchEngine se = new SearchEngine(query);
-se.search();
+se.stopStem();
 %>
 
 <h3>
 You are searching for:
 <%=se.getStopStemQuery()%>
+
+<BR><BR>
+
+&nbsp &nbsp &nbsp &nbsp
+
+<%
+Vector<String> sensitiveWords = se.getSensitiveWords();
+if (!sensitiveWords.isEmpty()) {
+    out.print("These words violate our regulations: ");
+    for (String word : sensitiveWords) {
+        out.print(word + " ");
+    }
+}
+%>
 
 <BR><BR><BR>
 
@@ -86,41 +108,44 @@ You are searching for:
 
 <div>
 <%
-Vector<Double> scores = se.printScores();
-Vector<String> results = se.printResults();
-int i = 0;
-int total = results.size();
-%>
-<table align=center border=1 style="background-color:#e8f4f8">
-<%
-for (String result : results) {
+if (sensitiveWords.isEmpty()) {
+    se.search();
+    Vector<Double> scores = se.printScores();
+    Vector<String> results = se.printResults();
+    int i = 0;
+    int total = results.size();
+    %>
+    <table align=center border=1 style="background-color:#e8f4f8">
+    <%
+    for (String result : results) {
 
-    if (scores.elementAt(i) != 0.0) {
-%>
-    <tr>
-    <td valign="top" style="padding: 20px;">
-<%
-        int score = (int) (scores.elementAt(i) / scores.elementAt(0) * 100);
-        out.print("<b>" + score + "</b>");
-%>
-        </td>
-        <td>
-        <BR>
-<%
-        out.print(result);
-        String PageID = se.getPageID(i);
-%>
-<BR>
-<input type="submit" name="similar" value="   Similar Pages   " id="<%=PageID%>" onClick="similar(this,<%=total%>)">
-<BR>
-<BR>
-<%
-        i++;
+        if (scores.elementAt(i) != 0.0) {
+    %>
+        <tr>
+        <td valign="top" style="padding: 20px;">
+    <%
+            int score = (int) (scores.elementAt(i) / scores.elementAt(0) * 100);
+            out.print("<b>" + score + "</b>");
+    %>
+            </td>
+            <td>
+            <BR>
+    <%
+            out.print(result);
+            String PageID = se.getPageID(i);
+    %>
+    <BR>
+    <input type="submit" name="similar_button" value="   Similar Pages   " id="<%=PageID%>" onClick="similar(this)">
+    <BR>
+    <BR>
+            </td>
+        </tr>
+    <%
+            i++;
+        }
     }
 }
 %>
-        </td>
-    </tr>
 </table>
 </div>
 

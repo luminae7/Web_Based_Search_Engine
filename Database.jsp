@@ -3,7 +3,7 @@
 
 <html>
 <head>
-<title> Results </title>
+<title> Database </title>
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 <script>
 $(document).ready(function(e) {
@@ -66,10 +66,12 @@ for (String result : results) {
         <BR>
 <%
     out.print(result);
-}
 %>
         </td>
     </tr>
+<%
+}
+%>
 </div>
 
 </body>

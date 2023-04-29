@@ -65,6 +65,7 @@ public class SearchEngine
 	private static Database PageIDtoTFxIDF;
 	
 	private static StopStem stopStem;
+	private static Vector<String> sensitiveWords;
 	
 	public SearchEngine(String _query) throws IOException
 	{
@@ -103,7 +104,8 @@ public class SearchEngine
 		// find forward index for PageID and TFxIDF
 		PageIDtoTFxIDF = new Database("PageIDtoTFxIDF", "1");
 		
-		stopStem = new StopStem("stopwords.txt");
+		stopStem = new StopStem("stopwords.txt", "sensitivewords.txt");
+		sensitiveWords = new Vector<String>();
 		
 		// top 50 pages and val
 		fiftyPagesVal = new double[PageIDtoTitle.size()][2];
@@ -114,7 +116,7 @@ public class SearchEngine
 		fiftyVal = new Vector<Double>();
 	}
 	
-	private static void stopStem()
+	public static void stopStem()
 	{	
 		// split with space characters
 		String[] strings = query.split("\\s+");
@@ -131,8 +133,6 @@ public class SearchEngine
 	
 	public void search() throws IOException
 	{	
-		stopStem();
-		
 		for (String word : stopStemQuery) {
 			
 			// get wordID of each word
@@ -143,10 +143,12 @@ public class SearchEngine
 				// get pages whose title contains this word
 				if (TitleWordIDtoPageID.get(wordID).compareTo("") != 0) {
 					String[] pageIDs_title = TitleWordIDtoPageID.get(wordID).split(";");
+					double df = pageIDs_title.length;
+					double N = PageIDtoTitle.size();
 					for (int i = 0; i < pageIDs_title.length; i++) {
 						String[] pages_freq = pageIDs_title[i].split(" ");
 							
-						fiftyPagesVal[Integer.valueOf(pages_freq[0])][1] += 3 * Integer.valueOf(pages_freq[1]);
+						fiftyPagesVal[Integer.valueOf(pages_freq[0])][1] += 1 * Math.log(N / df) / Math.log(2);
 					}
 				}
 				
@@ -176,9 +178,19 @@ public class SearchEngine
 	public static String getStopStemQuery()
 	{
 		String result = "";
-		for (String query : stopStemQuery)
-			result += query + " ";
+		for (String string : stopStemQuery)
+			result += string + " ";
 		return result;
+	}
+	
+	public static Vector<String> getSensitiveWords()
+	{
+		for (String string : stopStemQuery) {
+			if (stopStem.isSensitiveWord(string)) {
+				sensitiveWords.add(string);
+			}
+		}
+		return sensitiveWords;
 	}
 	
 	public static String getPageID(int i)
