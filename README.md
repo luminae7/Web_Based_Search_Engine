@@ -2,21 +2,34 @@
 
 Given a starting URL and number of pages to be indexed, the Spider will crawl the site into the local database using a breadth-first search.
 
-First build the program by:
-> javac -cp combined.jar project/*.java
+First Add environment var:
 
-Then execute it by:
-> java -cp combined.jar:. project.Tester -links [the staring URL] -num [the required number of pages]
+**CATALINA HOME** = "your tomcat path (e.g. C:\apache-tomcat-9.0.70)"
 
-You can also specify the output destination by:
-> java -cp combined.jar:. project.Tester -links [the staring URL] -num [the required number of pages] > result.txt
+**JAVA HOME** = "your jdk path (e.g. C:\Program Files\Java\jdk-19)"
 
-The arguments links and num are optional. The initial value of the arguments are http://cse.ust.hk and 30.
+Go to %CATALINA_HOME%\webapps and create a folder "Search"
 
-With -num 0, you can print the current data (fetched pages) stored in database.
+Put the files under %CATALINA_HOME%\webapps\Search
 
-If you want to first clear the database saved previously:
-> rm database/*
+Then build the program by:
+> javac -cp combined.jar WEB-INF/classes/project/*.java
+
+Then start it by:
+> %CATALINA_HOME%\bin\startup.bat
+
+Open in your browser: ***http://localhost:8080/Search/Search.html*** to test your program
+
+Shut it down by:
+> %CATALINA_HOME%\bin\shutdown.bat
+
+The inputs link and number of pages to fetch are optional. The initial values of the inputs are **https://www.cse.ust.hk/~kwtleung/COMP4321/testpage.htm** and **300** (if you enter nothing in the Input Number of Pages to Fetch).
+
+With -num 0, you can print the current data (fetched pages) stored in database. Or you can press the button "Database".
+
+If you want to first clear the database saved previously, press the button "Delete Database"
+
+The button "Similar Pages" is equivalent to search pages with the top 5 most frequent keywords from that page.
 
 ## Others:
 
