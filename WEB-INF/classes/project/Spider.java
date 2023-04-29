@@ -313,13 +313,13 @@ public class Spider
 	
 	public static Vector<String> printWords() throws IOException
 	{
-		Collections.sort(null);
 		Vector<String> results = new Vector<String>();
 		FastIterator iter = indexer.WordtoWordID.getKeys();
 		String Word;
 		while ((Word = (String)iter.next()) != null) {
 			results.add(Word);
 		}
+		Collections.sort(results);
 		return results;
 	}
 	

@@ -51,7 +51,6 @@ Spider spider = new Spider(url);
 
 <%
 Vector<String> words = spider.printWords();
-Collections.sort(words);
 %>
 <form action="Search.jsp">
 <h5>
