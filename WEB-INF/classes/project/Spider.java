@@ -40,7 +40,6 @@ public class Spider
 	private static Database URLtoPageID;
 	private static int PageIndex;
 	
-	private static Database PageIDtoTitle;
 	private static Database PageIDtoTime;
 	
 	private static Database ParenttoChild;
@@ -64,7 +63,6 @@ public class Spider
 		PageIndex = PageIDtoURL.size();
 		
 		// create mapping table for PageID and Header
-		PageIDtoTitle = new Database("PageIDtoTitle", "1");
 		PageIDtoTime = new Database("PageIDtoTime", "1");
 		
 		// create forward and backward index for Parent and Child
@@ -97,24 +95,6 @@ public class Spider
 			date = new Date(time);
 		}
 		return date;
-	}
-	
-	public static void storeTitle(String PageID) throws IOException
-	{
-		// print the title
-		String title;
-		try {
-			title = Jsoup.connect(url).get().title();
-		}
-		// if cannot get the title, certification error
-		catch (Exception e) {
-			title = "No Title";
-		}
-		// store the title to PageIDtoTitle
-		PageIDtoTitle.add(PageID, title);
-		
-		// store the title words
-		indexer.storeTitle(PageID, title);
 	}
 	
 	public static Vector<String> extractLinks() throws ParserException
@@ -172,7 +152,7 @@ public class Spider
 	
 	public static void tfxidf() throws IOException
 	{	
-		tfxidf = new double[PageIDtoTitle.size()][indexer.WordIDtoWord.size()];
+		tfxidf = new double[indexer.PageIDtoTitle.size()][indexer.WordIDtoWord.size()];
 		FastIterator iter = indexer.WordIDtoWord.getKeys();
 		String WordID;
 		
@@ -191,7 +171,7 @@ public class Spider
 					
 					// tf idf
 					double df = pageIDs.length;
-					double N = PageIDtoTitle.size();
+					double N = indexer.PageIDtoTitle.size();
 					for (int i = 0; i < pageIDs.length; i++) {
 						String[] pages_freq = pageIDs[i].split(" ");
 						int pageID = Integer.valueOf(pages_freq[0]);
@@ -209,7 +189,7 @@ public class Spider
 			}
 		}
 		
-		iter = PageIDtoTitle.getKeys();
+		iter = indexer.PageIDtoTitle.getKeys();
 		String PageID;
 		
 		// store into database
@@ -229,7 +209,7 @@ public class Spider
 	public static Vector<String> print() throws IOException
 	{
 		Vector<String> results = new Vector<String>();
-		FastIterator iter = PageIDtoTitle.getKeys();
+		FastIterator iter = indexer.PageIDtoTitle.getKeys();
 		String PageID;
 		while ((PageID = (String)iter.next()) != null) {
 			
@@ -238,7 +218,7 @@ public class Spider
 			String _url = PageIDtoURL.get(PageID);
 			
 			// print Title
-			result += "=== " + "<b>" + "<a href="+_url+">" + PageIDtoTitle.get(PageID) + "</a>" + "</b>" + " ===" + "<BR><BR>";
+			result += "=== " + "<b>" + "<a href="+_url+">" + indexer.PageIDtoTitle.get(PageID) + "</a>" + "</b>" + " ===" + "<BR><BR>";
 			
 			// print Title words
 			// if (PageIDtoTitleWordID.get(PageID) != null) {
@@ -328,7 +308,7 @@ public class Spider
 		// save all the tables and indexes
 		PageIDtoURL.save();
 		URLtoPageID.save();
-		PageIDtoTitle.save();
+		indexer.PageIDtoTitle.save();
 		PageIDtoTime.save();
 		indexer.PageIDtoLength.save();
 		indexer.WordIDtoWord.save();
@@ -408,7 +388,7 @@ public class Spider
 				}
 				
 				// store the title
-				storeTitle(PageID);
+				indexer.storeTitle(PageID, url);
 				
 				// store the words from the page
 				indexer.storeWords(PageID, url);

@@ -1,5 +1,6 @@
 <%@ page import="project.*"%>
 <%@ page import="java.util.Vector"%>
+<%@ page import="java.io.File"%>
 
 <html>
 <head>
@@ -94,5 +95,16 @@ spider.saveDatabase();
 
 </body>
 </html>
+
+<%
+File titlewordfreqdb = new File("database/titlewordfreq.db");
+titlewordfreqdb.delete();
+File titlewordfreqlg = new File("database/titlewordfreq.lg");
+titlewordfreqlg.delete();
+File wordfreqdb = new File("database/wordfreq.db");
+wordfreqdb.delete();
+File wordfreqlg = new File("database/wordfreq.lg");
+wordfreqlg.delete();
+%>
 
 <script type="text/javascript"> window.onload = alertName; </script>

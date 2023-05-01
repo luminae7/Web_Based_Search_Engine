@@ -17,6 +17,7 @@ import jdbm.htree.HTree;
 
 public class Indexer {
 	
+	public Database PageIDtoTitle;
 	public Database PageIDtoLength;
 	
 	public Database WordIDtoWord;
@@ -30,11 +31,14 @@ public class Indexer {
 	public Database WordIDtoPageID;
 	public Database PageIDtoTopFiveWordID;
 	
+	private static HTree titleHashtable;
+	
 	private static StopStem stopStem;
 	
 	public Indexer() throws IOException
 	{
 		// create mapping table for PageID and Header
+		PageIDtoTitle = new Database("PageIDtoTitle", "1");
 		PageIDtoLength = new Database("PageIDtoLength", "1");
 		
 		// create mapping table for WordID and Word
@@ -78,8 +82,29 @@ public class Indexer {
 		}
 	}
 	
-	public void storeTitle(String PageID, String title) throws IOException
+	public static String extractTitle(String url) throws IOException
 	{
+		// print the title
+		String title;
+		try {
+			title = Jsoup.connect(url).get().title();
+		}
+		// if cannot get the title, certification error
+		catch (Exception e) {
+			title = "No Title";
+		}
+		
+		return title;
+	}
+	
+	public void storeTitle(String PageID, String url) throws IOException
+	{
+		// get title
+		String title = extractTitle(url);
+		
+		// store the title to PageIDtoTitle
+		PageIDtoTitle.add(PageID, title);
+		
 		// count the word frequency
 		String[] strings = title.split("\\s+");
 		Vector<String> words = new Vector<String>();
@@ -90,20 +115,21 @@ public class Indexer {
 				if (!stopStem.isStopWord(string))
 					words.add(stopStem.stem(string));
 		}
-		Database wordfreq = new Database("titlewordfreq", "1");
-		HTree hashtable = wordfreq.countWords(words);
+		Database titleWordFreq = new Database("titlewordfreq", "1");
+		titleHashtable = titleWordFreq.countWords(words);
 		
 		// save the text frequency
-		FastIterator iter = hashtable.keys();
+		FastIterator iter = titleHashtable.keys();
 		String key;
 		String WordID;
 		String freq;
 		int count = 0;
-		while((key = (String)iter.next())!=null)
+		while((key = (String) iter.next()) != null)
 		{
-			freq = (String) hashtable.get(key);
+			freq = (String) titleHashtable.get(key);
 			
 			WordID = WordtoWordID.get(key);
+			
 			// if new word then add to WordIDtoWord table
 			if (WordID == null) {
 				WordIDtoWord.add(Integer.toString(WordIndex), key);
@@ -129,7 +155,7 @@ public class Indexer {
 		}
 	}
 	
-	public static Vector<String> extractWords(String url) throws ParserException
+	public static Vector<String> extractWords(String url) throws ParserException, IOException
 	{
 		// extract words in url and return them
 		Vector<String> words = new Vector<String>();
@@ -148,6 +174,14 @@ public class Indexer {
 				if (!stopStem.isStopWord(string))
 					words.add(stopStem.stem(string));
 		}
+		
+		// remove title in words
+		FastIterator iter = titleHashtable.keys();
+		String key;
+		while((key = (String) iter.next()) != null) {
+			words.remove(key);
+		}
+		
 		return words;
 	}
 	
@@ -164,11 +198,11 @@ public class Indexer {
 		PageIDtoLength.add(PageID, context_size+";"+extractHTMLLength(url)+";"+words.size());
 		
 		// count the word frequency
-		Database wordfreq = new Database("wordfreq", "1");
-		HTree hashtable = wordfreq.countWords(words);
+		Database wordFreq = new Database("wordfreq", "1");
+		HTree hashtable = wordFreq.countWords(words);
 		// find the top five stemmed words and their frequencies
-		String[] TopFive = wordfreq.TopFive;
-		int[] TopFiveVal = wordfreq.TopFiveVal;
+		String[] TopFive = wordFreq.TopFive;
+		int[] TopFiveVal = wordFreq.TopFiveVal;
 		
 		// save the text frequency
 		FastIterator iter = hashtable.keys();
@@ -176,11 +210,12 @@ public class Indexer {
 		String WordID;
 		String freq;
 		int count = 0;
-		while((key = (String)iter.next())!=null)
+		while((key = (String) iter.next()) != null)
 		{
 			freq = (String) hashtable.get(key);
 			
 			WordID = WordtoWordID.get(key);
+			
 			// if new word then add to WordIDtoWord table
 			if (WordID == null) {
 				WordIDtoWord.add(Integer.toString(WordIndex), key);
