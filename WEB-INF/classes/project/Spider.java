@@ -323,6 +323,14 @@ public class Spider
 		indexer.PageIDtoTitleWordID.save();
 		indexer.TitleWordIDtoPageID.save();
 		PageIDtoTFxIDF.save();
+		indexer.PageIDtoBiTitleWordID.save();
+		indexer.BiTitleWordIDtoPageID.save();
+		indexer.PageIDtoTriTitleWordID.save();
+		indexer.TriTitleWordIDtoPageID.save();
+		indexer.PageIDtoBiWordID.save();
+		indexer.BiWordIDtoPageID.save();
+		indexer.PageIDtoTriWordID.save();
+		indexer.TriWordIDtoPageID.save();
 	}
 	
 	public void crawl(int num) throws Exception
@@ -393,6 +401,13 @@ public class Spider
 				
 				// store the words from the page
 				indexer.storeWords(PageID, url);
+				
+				// store the title and word bigram
+				indexer.storeTitleBigram(PageID, url);
+				indexer.storeWordsBigram(PageID, url);
+				// store the title and word trigram
+				indexer.storeTitleTrigram(PageID, url);
+				indexer.storeWordsTrigram(PageID, url);
 				
 				// store the links from the page
 				storeLinks(PageID);

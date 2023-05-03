@@ -75,24 +75,29 @@ else if (dictionary != null && dictionary.length != 0) {
 // from searchHistory
 else if (history != null && history.length != 0) {
     for (String word : history)
-        query += word + " "; 
+        query += word.replaceAll("@", "\"") + " "; 
 }
 // from search
 else if (request.getParameter("query") != null) {
     query = request.getParameter("query");
 }
 SearchEngine se = new SearchEngine(query);
+se.phrase();
 se.stopStem();
 %>
 
 <h3>
 You are searching for:
 <%=se.getStopStemQuery()%>
+<BR><BR>
+&nbsp &nbsp &nbsp &nbsp
+Phrases:
+<%=se.getPhrases()%>
 
 <%
 Database History = new Database("SearchHistory", "1");
 int HistoryIndex = History.size();
-History.add(String.valueOf(HistoryIndex), se.getStopStemQuery());
+History.add(String.valueOf(HistoryIndex), query.replaceAll("\"", "@"));
 HistoryIndex++;
 History.save();
 %>
@@ -103,7 +108,7 @@ if (!sensitiveWords.isEmpty()) {
 %>
 
 <BR><BR>
-&nbsp &nbsp &nbsp &nbsp
+&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
 
 <%
     out.print("These words violate our regulations: ");

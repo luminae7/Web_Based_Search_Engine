@@ -85,7 +85,7 @@ for (int i = HistoryIndex - 1; i >= 0; i--) {
         <BR>
     <input type="checkbox" name="history" value="<%=word%>">
 <%
-    out.print(word);
+    out.print(word.replaceAll("@", "\""));
 %>
         </td>
     </tr>
