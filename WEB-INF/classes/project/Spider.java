@@ -120,7 +120,8 @@ public class Spider
 		for(int j = 0; j < links.size(); j++) {
 			// add all links to vector for next pages
 			ChildPageURL = links.get(j);
-			if (!pages_queue.contains(ChildPageURL))
+			if (!visited_pages.contains(ChildPageURL) && 
+				!pages_queue.contains(ChildPageURL))
 				pages_queue.add(ChildPageURL);
 			
 			// put child page to PageIDtoURL tables
@@ -362,21 +363,18 @@ public class Spider
 					if (extractDate().compareTo(date) <= 0) {
 						// get the links and then ignore
 						Vector<String> links = extractLinks();
+						// add to visited pages
+						visited_pages.add(url);
 						// append the links to pages
 						for(int j = 0; j < links.size(); j++)
-							pages_queue.add(links.get(j));
-						// i-- as this page is not fetched
+							if (!visited_pages.contains(links.get(j)) && 
+								!pages_queue.contains(links.get(j)))
+								pages_queue.add(links.get(j));
+						// i-- as this page is not fetched, not counted
 						i--;
 						// assign next page to url
 						if (!pages_queue.isEmpty())
-							// if visited this round, then next page
-							while (visited_pages.contains(url = pages_queue.remove(0))) {
-								if (pages_queue.isEmpty()) {
-									url = null;
-									break;
-								}
-								continue;
-							}
+							url = pages_queue.remove(0);
 						else
 							url = null;
 						continue;
@@ -387,6 +385,9 @@ public class Spider
 					PageIDtoTime.add(URLtoPageID.get(url), ""+extractDate());
 				}
 				
+				// add to visited pages
+				visited_pages.add(url);
+				
 				// store the title
 				indexer.storeTitle(PageID, url);
 				
@@ -396,21 +397,11 @@ public class Spider
 				// store the links from the page
 				storeLinks(PageID);
 				
-				// add to visited pages
-				visited_pages.add(url);
-				
 				// assign next page to url
-				if (!pages_queue.isEmpty()) {
-					// if visited this round, then next page
-					while (visited_pages.contains(url = pages_queue.remove(0))) {
-						if (pages_queue.isEmpty()) {
-							url = null;
-							break;
-						}
-						continue;
-					}
-				}
-				else url = null;
+				if (!pages_queue.isEmpty())
+					url = pages_queue.remove(0);
+				else
+					url = null;
 			}
 		} else {
 			System.out.println("Usage: java -cp combined.jar:. project.main [-links] url [-num] NumOfPages");
