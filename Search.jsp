@@ -51,7 +51,8 @@ h3 {
 
 <%
 String query = "";
-String s[] = request.getParameterValues("word");
+String dictionary[] = request.getParameterValues("word");
+String history[] = request.getParameterValues("history");
 // from similar pages
 if (request.getParameter("similar") != null)
 {
@@ -67,8 +68,13 @@ if (request.getParameter("similar") != null)
     }
 }
 // from dictionary
-else if (s != null && s.length != 0) {
-    for (String word : s)
+else if (dictionary != null && dictionary.length != 0) {
+    for (String word : dictionary)
+        query += word + " "; 
+}
+// from searchHistory
+else if (history != null && history.length != 0) {
+    for (String word : history)
         query += word + " "; 
 }
 // from search
@@ -83,13 +89,23 @@ se.stopStem();
 You are searching for:
 <%=se.getStopStemQuery()%>
 
-<BR><BR>
-
-&nbsp &nbsp &nbsp &nbsp
+<%
+Database History = new Database("SearchHistory", "1");
+int HistoryIndex = History.size();
+History.add(String.valueOf(HistoryIndex), se.getStopStemQuery());
+HistoryIndex++;
+History.save();
+%>
 
 <%
 Vector<String> sensitiveWords = se.getSensitiveWords();
 if (!sensitiveWords.isEmpty()) {
+%>
+
+<BR><BR>
+&nbsp &nbsp &nbsp &nbsp
+
+<%
     out.print("These words violate our regulations: ");
     for (String word : sensitiveWords) {
         out.print(word + " ");
@@ -98,6 +114,10 @@ if (!sensitiveWords.isEmpty()) {
 %>
 
 <BR><BR><BR>
+
+<form method="post" action="SearchHistory.jsp"> 
+<input type="submit" value="   Search History   ">
+</form>
 
 <form method="post" action="Search.html"> 
 <input type="submit" value="   Back to Search Engine   ">
