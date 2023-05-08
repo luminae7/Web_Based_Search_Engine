@@ -2,26 +2,26 @@
 
 Given a starting URL and number of pages to be indexed, the Spider will crawl the site into the local database using a breadth-first search. You can then search by submitting the query on the web interface.
 
-Download the files on Github and unzip it
+1. Download the files on Github and unzip it
 
-Add environment var:
+2. Add environment var:
 
 **CATALINA_HOME** = "your tomcat path (e.g. /Users/ABC/apache-tomcat-9.0.74)"
 **JAVA_HOME** = "your jdk path (e.g. /Users/ABC/jdk-20.0.1.jdk/Contents/Home)"
 
-Go to $CATALINA_HOME/webapps and create a folder "Search"
+3. Go to $CATALINA_HOME/webapps and create a folder "Search"
 
-Put the files under $CATALINA_HOME/webapps/Search
+4. Put the files under $CATALINA_HOME/webapps/Search
 
-Then build the program by:
+5. Then build the program by:
 > javac -cp combined.jar WEB-INF/classes/project/*.java
 
-Then start it by:
+7. Then start it by:
 > $CATALINA_HOME/bin/startup.sh
 
-Open in your browser: ***http://localhost:8080/Search/Search.html*** to test the program
+8. Open in your browser: ***http://localhost:8080/Search/Search.html*** to test the program
 
-Shut it down by:
+9.Shut it down by:
 > $CATALINA_HOME/bin/shutdown.sh
 
 The inputs link and number of pages to fetch are optional. The initial values of the inputs are **https://www.cse.ust.hk/~kwtleung/COMP4321/testpage.htm** and **300** (if you enter nothing in the Input Number of Pages to Fetch).
