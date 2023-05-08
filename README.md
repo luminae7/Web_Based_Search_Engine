@@ -10,6 +10,7 @@ Add environment var:
 **JAVA_HOME** = "your jdk path (e.g. /Users/ABC/jdk-20.0.1.jdk/Contents/Home)"
 
 Go to $CATALINA_HOME/webapps and create a folder "Search"
+
 Put the files under $CATALINA_HOME/webapps/Search
 
 Then build the program by:
