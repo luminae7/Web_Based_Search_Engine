@@ -243,7 +243,7 @@ public class SearchEngine
 						for (int i = 0; i < pageIDs_title.length; i++) {
 							String[] pages_freq = pageIDs_title[i].split(" ");
 								
-							fiftyPagesVal[Integer.valueOf(pages_freq[0])][1] += 1 * Math.log(N / df) / Math.log(2);
+							fiftyPagesVal[Integer.valueOf(pages_freq[0])][1] += 2 * 1 * Math.log(N / df) / Math.log(2);
 						}
 					}
 					
@@ -255,7 +255,7 @@ public class SearchEngine
 							String[] page_scores = PageIDtoTFxIDF.get(pages_freq[0]).split(";");
 							double page_score = Double.valueOf(page_scores[Integer.valueOf(wordID)]);
 								
-							fiftyPagesVal[Integer.valueOf(pages_freq[0])][1] += page_score;
+							fiftyPagesVal[Integer.valueOf(pages_freq[0])][1] += 2 * page_score;
 						}
 					}
 				}
@@ -279,7 +279,7 @@ public class SearchEngine
 						for (int i = 0; i < pageIDs_title.length; i++) {
 							String[] pages_freq = pageIDs_title[i].split(" ");
 								
-							fiftyPagesVal[Integer.valueOf(pages_freq[0])][1] += 1 * Math.log(N / df) / Math.log(2);
+							fiftyPagesVal[Integer.valueOf(pages_freq[0])][1] += 2 * 1 * Math.log(N / df) / Math.log(2);
 						}
 					}
 					
@@ -299,7 +299,7 @@ public class SearchEngine
 							String[] pages_freq = pageIDs[i].split(" ");
 								
 							fiftyPagesVal[Integer.valueOf(pages_freq[0])][1] +=
-									Double.valueOf(pages_freq[1]) / max * Math.log(N / df) / Math.log(2);
+									2 * Double.valueOf(pages_freq[1]) / max * Math.log(N / df) / Math.log(2);
 						}
 					}
 				}
@@ -324,7 +324,7 @@ public class SearchEngine
 						for (int i = 0; i < pageIDs_title.length; i++) {
 							String[] pages_freq = pageIDs_title[i].split(" ");
 								
-							fiftyPagesVal[Integer.valueOf(pages_freq[0])][1] += 1 * Math.log(N / df) / Math.log(2);
+							fiftyPagesVal[Integer.valueOf(pages_freq[0])][1] += 2 * 1 * Math.log(N / df) / Math.log(2);
 						}
 					}
 					
@@ -344,7 +344,7 @@ public class SearchEngine
 							String[] pages_freq = pageIDs[i].split(" ");
 								
 							fiftyPagesVal[Integer.valueOf(pages_freq[0])][1] +=
-									Double.valueOf(pages_freq[1]) / max * Math.log(N / df) / Math.log(2);
+									2 * Double.valueOf(pages_freq[1]) / max * Math.log(N / df) / Math.log(2);
 						}
 					}
 				}
