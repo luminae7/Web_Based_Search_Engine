@@ -151,7 +151,7 @@ public class Spider
 		}
 	}
 	
-	public static void tfxidf() throws IOException
+	private static void tfxidf() throws IOException
 	{	
 		tfxidf = new double[indexer.PageIDtoTitle.size()][indexer.WordIDtoWord.size()];
 		FastIterator iter = indexer.WordIDtoWord.getKeys();
@@ -309,28 +309,35 @@ public class Spider
 		// save all the tables and indexes
 		PageIDtoURL.save();
 		URLtoPageID.save();
+		
 		indexer.PageIDtoTitle.save();
 		PageIDtoTime.save();
 		indexer.PageIDtoLength.save();
+		
 		indexer.WordIDtoWord.save();
 		indexer.WordtoWordID.save();
+		
 		ParenttoChild.save();
 		ChildtoParent.save();
-		indexer.PageIDtoWordID.save();
-		indexer.WordIDtoPageID.save();
-		// new
-		indexer.PageIDtoTopFiveWordID.save();
+		
 		indexer.PageIDtoTitleWordID.save();
 		indexer.TitleWordIDtoPageID.save();
-		PageIDtoTFxIDF.save();
+		
+		indexer.PageIDtoWordID.save();
+		indexer.WordIDtoPageID.save();
+		indexer.PageIDtoTopFiveWordID.save();
+		
 		indexer.PageIDtoBiTitleWordID.save();
 		indexer.BiTitleWordIDtoPageID.save();
 		indexer.PageIDtoTriTitleWordID.save();
 		indexer.TriTitleWordIDtoPageID.save();
+		
 		indexer.PageIDtoBiWordID.save();
 		indexer.BiWordIDtoPageID.save();
 		indexer.PageIDtoTriWordID.save();
 		indexer.TriWordIDtoPageID.save();
+		
+		PageIDtoTFxIDF.save();
 	}
 	
 	public void crawl(int num) throws Exception
@@ -418,6 +425,9 @@ public class Spider
 				else
 					url = null;
 			}
+			
+			// compute tfxidf after crawling
+			tfxidf();
 		} else {
 			System.out.println("Usage: java -cp combined.jar:. project.main [-links] url [-num] NumOfPages");
 		}

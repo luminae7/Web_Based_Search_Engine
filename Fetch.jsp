@@ -64,10 +64,6 @@ Spider spider = new Spider(url);
 spider.crawl(num);
 %>
 
-<%
-spider.tfxidf();
-%>
-
 <div>
 <%
 Vector<String> results = spider.print();

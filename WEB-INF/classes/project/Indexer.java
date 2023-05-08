@@ -369,7 +369,6 @@ public class Indexer {
 		
 		// save the text frequency
 		FastIterator iter = hashtable.keys();
-		int count = 0;
 		String key;
 		String firstWordID;
 		String secondWordID;
@@ -380,10 +379,6 @@ public class Indexer {
 		{
 			freq = (String) hashtable.get(key);
 			
-			Database a = new Database("a", "1");
-			a.add(key, String.valueOf(count));
-			a.save();
-			count++;
 			firstWordID = WordtoWordID.get(key.split(" ")[0]);
 			secondWordID = WordtoWordID.get(key.split(" ")[1]);
 			BigramID = firstWordID + " " + secondWordID;
