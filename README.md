@@ -6,8 +6,8 @@ Given a starting URL and number of pages to be indexed, the Spider will crawl th
 
 2. Add environment var:
 
-**CATALINA_HOME** = "your tomcat path (e.g. /Users/ABC/apache-tomcat-9.0.74)"
-**JAVA_HOME** = "your jdk path (e.g. /Users/ABC/jdk-20.0.1.jdk/Contents/Home)"
+- **CATALINA_HOME** = "your tomcat path (e.g. /Users/ABC/apache-tomcat-9.0.74)"
+- **JAVA_HOME** = "your jdk path (e.g. /Users/ABC/jdk-20.0.1.jdk/Contents/Home)"
 
 3. Go to $CATALINA_HOME/webapps and create a folder "Search"
 
@@ -16,12 +16,12 @@ Given a starting URL and number of pages to be indexed, the Spider will crawl th
 5. Then build the program by:
 > javac -cp combined.jar WEB-INF/classes/project/*.java
 
-7. Then start it by:
+6. Then start it by:
 > $CATALINA_HOME/bin/startup.sh
 
-8. Open in your browser: ***http://localhost:8080/Search/Search.html*** to test the program
+7. Open in your browser: ***http://localhost:8080/Search/Search.html*** to test the program
 
-9.Shut it down by:
+8. Shut it down by:
 > $CATALINA_HOME/bin/shutdown.sh
 
 The inputs link and number of pages to fetch are optional. The initial values of the inputs are **https://www.cse.ust.hk/~kwtleung/COMP4321/testpage.htm** and **300** (if you enter nothing in the Input Number of Pages to Fetch).
