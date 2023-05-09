@@ -221,17 +221,6 @@ public class Spider
 			// print Title
 			result += "=== " + "<b>" + "<a href="+_url+">" + indexer.PageIDtoTitle.get(PageID) + "</a>" + "</b>" + " ===" + "<BR><BR>";
 			
-			// print Title words
-			// if (PageIDtoTitleWordID.get(PageID) != null) {
-			// 	String[] wordIDs = PageIDtoTitleWordID.get(PageID).split(";");
-			//	for (int i = 0; i < wordIDs.length; i++) {
-			//		String[] wordID_freq = wordIDs[i].split(" ");
-			//		String word = WordIDtoWord.get(wordID_freq[0]);
-			//		result += word+" "+wordID_freq[1]+"; ";
-			//	}
-			//	result += "<BR>";
-			// }
-			
 			// print URL
 			result += "<a href="+_url+">" + PageIDtoURL.get(PageID) + "</a>" + "<BR><BR>";
 			
@@ -242,17 +231,6 @@ public class Spider
 			result += ", "+Length[0]+" (Content-Length), "+Length[1]+" (HTML Length)" + "<BR>";
 			// print number of words
 			result += Length[2] + " (Number of Words)" + "<BR><BR>";
-			
-			// print word with freq (up to 10)
-			// if (indexer.PageIDtoWordID.get(PageID) != null) {
-			// 	 String[] wordIDs = indexer.PageIDtoWordID.get(PageID).split(";");
-			//	 for (int i = 0; i < 10; i++) {
-			//		 String[] wordID_freq = wordIDs[i].split(" ");
-			//		 String word = indexer.WordIDtoWord.get(wordID_freq[0]);
-			//		 System.out.print(word+" "+wordID_freq[1]+"; ");
-			//	 }
-			//	 System.out.println("");
-			// }
 			
 			// print word with top five freq (up to 5)
 			if (indexer.PageIDtoTopFiveWordID.get(PageID) != null) {

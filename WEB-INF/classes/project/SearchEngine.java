@@ -351,7 +351,7 @@ public class SearchEngine
 			}
 		}
 		
-		// find and normalize top 50 score to [0, 100]
+		// sort and get top 50 pages
 		Arrays.sort(fiftyPagesVal, (a, b) -> Double.compare(b[1], a[1]));
 		
 		for (int i = 0; i < Math.min(50, PageIDtoTitle.size()); i++) {
